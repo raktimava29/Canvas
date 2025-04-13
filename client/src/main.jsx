@@ -14,3 +14,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ThemeProvider>
   </React.StrictMode>
 )
+
+// Chakra UI v.3.15.1
+// https://chakra-ui.com/docs/get-started/frameworks/vite
+// Follow these steps properly and check migration also for reference
+//https://chakra-ui.com/docs/get-started/migration
