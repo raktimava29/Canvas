@@ -1,9 +1,9 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useRef, useEffect, useState } from "react";
 import MySlider from "./Slider";
 import MyPicker from "./Color";
 
-function Whiteboard() {
+const Whiteboard = () => {
   const canvasRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const ctxRef = useRef(null);
@@ -101,11 +101,17 @@ function Whiteboard() {
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
+
+    // Save current canvas state to history BEFORE clearing
+    const currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    setHistory(prev => {
+      const updated = [...prev, currentImage];
+      return updated.length > maxHistoryLength ? updated.slice(1) : updated;
+    });
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     scrollContainerRef.current.scrollTop = 0;
 
-    const blank = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    setHistory([blank]);
     setRedoHistory([]);
   };
 
@@ -151,8 +157,8 @@ function Whiteboard() {
   };
 
   return (
-    <Box className="flex flex-col h-screen">
-      <Box className="flex flex-row justify-between items-center py-2 px-4 border-b-2 border-black">
+    <Flex direction="column" className="h-screen">
+      <Flex justify="space-between" align="center" className="py-2 px-4 border-b-2 border-black">
         <Box>
         <button onClick={clearCanvas} className="px-5 py-2.5 bg-red-600 text-white rounded border-none">
           Clear
@@ -166,7 +172,7 @@ function Whiteboard() {
         </Box>
         <MySlider value={lineWidth} onChange={setLineWidth} />
         <MyPicker value={strokeColor} onExchange={setStrokeColor} />
-      </Box>
+      </Flex>
 
       <Box
         ref={scrollContainerRef}
@@ -190,7 +196,7 @@ function Whiteboard() {
           className="cursor-crosshair w-full block border border-black"
         />
       </Box>
-    </Box>
+    </Flex>
   );
 }
 
