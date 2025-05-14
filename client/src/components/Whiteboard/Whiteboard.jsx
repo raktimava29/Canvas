@@ -32,22 +32,17 @@ const Whiteboard = () => {
     ctx.lineWidth = lineWidth;
     ctxRef.current = ctx;
 
-    // Save blank initial snapshot
     const initialImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
     setHistory([initialImage]);
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-
       if (scrollTop + clientHeight >= scrollHeight - 100) {
         const oldImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
         canvas.height += 500;
-
         ctx.lineCap = "round";
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = lineWidth;
-
         ctx.putImageData(oldImage, 0, 0);
       }
     };
@@ -73,7 +68,6 @@ const Whiteboard = () => {
   const draw = ({ nativeEvent }) => {
     if (!isDrawing) return;
     const { x, y } = getCanvasCoords(nativeEvent);
-
     ctxRef.current.lineWidth = lineWidth;
     ctxRef.current.strokeStyle = strokeColor;
     ctxRef.current.lineTo(x, y);
@@ -87,10 +81,9 @@ const Whiteboard = () => {
 
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-
     const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-    setHistory(prev => {
+    setHistory((prev) => {
       const updated = [...prev, snapshot];
       return updated.length > maxHistoryLength ? updated.slice(1) : updated;
     });
@@ -101,74 +94,56 @@ const Whiteboard = () => {
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-
-    // Save current canvas state to history BEFORE clearing
     const currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    setHistory(prev => {
+    setHistory((prev) => {
       const updated = [...prev, currentImage];
       return updated.length > maxHistoryLength ? updated.slice(1) : updated;
     });
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     scrollContainerRef.current.scrollTop = 0;
-
     setRedoHistory([]);
   };
 
   const undo = () => {
     if (history.length <= 1) return;
-
-    setHistory(prev => {
+    setHistory((prev) => {
       const updated = [...prev];
       const current = updated.pop();
-      setRedoHistory(r => [...r, current]);
-
+      setRedoHistory((r) => [...r, current]);
       const previous = updated[updated.length - 1];
       const canvas = canvasRef.current;
       const ctx = ctxRef.current;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.putImageData(previous, 0, 0);
-
       return updated;
     });
   };
 
   const redo = () => {
     if (redoHistory.length === 0) return;
-
-    setRedoHistory(prev => {
+    setRedoHistory((prev) => {
       const updated = [...prev];
       const next = updated.pop();
-
-      setHistory(h => {
+      setHistory((h) => {
         const newHistory = [...h, next];
         return newHistory.length > maxHistoryLength ? newHistory.slice(1) : newHistory;
       });
 
       const canvas = canvasRef.current;
       const ctx = ctxRef.current;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.putImageData(next, 0, 0);
-
       return updated;
     });
   };
 
   return (
-    <Flex direction="column" className="h-screen">
-      <Flex justify="space-between" align="center" className="py-2 px-4 border-b-2 border-black">
+    <Flex direction="column" flex='1'>
+      <Flex justify="space-between" align="center" py={2} px={4} borderBottom="2px" borderColor="black">
         <Box>
-        <button onClick={clearCanvas} className="px-5 py-2.5 bg-red-600 text-white rounded border-none">
-          Clear
-        </button>
-        <button onClick={undo} className="px-5 py-2.5 bg-blue-600 text-white rounded border-none ml-2">
-          Undo
-        </button>
-        <button onClick={redo} className="px-5 py-2.5 bg-green-600 text-white rounded border-none ml-2">
-          Redo
-        </button>
+          <button onClick={clearCanvas} className="px-5 py-2.5 bg-red-600 text-white rounded">Clear</button>
+          <button onClick={undo} className="px-5 py-2.5 bg-blue-600 text-white rounded ml-2">Undo</button>
+          <button onClick={redo} className="px-5 py-2.5 bg-green-600 text-white rounded ml-2">Redo</button>
         </Box>
         <MySlider value={lineWidth} onChange={setLineWidth} />
         <MyPicker value={strokeColor} onExchange={setStrokeColor} />
@@ -176,7 +151,7 @@ const Whiteboard = () => {
 
       <Box
         ref={scrollContainerRef}
-        className="overflow-auto no-scrollbar h-[100vh] m-12 mt-4"
+        className="overflow-auto no-scrollbar rounded-md mt-1 h-[90vh]"
         borderWidth="2px"
         borderColor="black"
         // css={{
@@ -193,11 +168,11 @@ const Whiteboard = () => {
           onMouseMove={draw}
           onMouseUp={endDrawing}
           onMouseLeave={endDrawing}
-          className="cursor-crosshair w-full block border border-black"
+          className="cursor-crosshair block w-full border border-black"
         />
       </Box>
     </Flex>
   );
-}
+};
 
 export default Whiteboard;
