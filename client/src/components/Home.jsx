@@ -1,7 +1,8 @@
-import { Box, Center, Flex, Heading } from '@chakra-ui/react';
+import { Box, Center, Flex, Heading, Input, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import Notepad from './Notepad/Notepad';
 import Whiteboard from './Whiteboard/Whiteboard';
+import { ColorModeProvider, ColorModeButton, useColorModeValue } from './ui/color-mode';
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState('');
@@ -12,23 +13,17 @@ const Home = () => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       setError(null);
-
       try {
         const url = new URL(inputUrl);
 
         if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
           let videoId = '';
-
           if (url.hostname === 'youtu.be') {
             videoId = url.pathname.slice(1);
           } else {
             videoId = url.searchParams.get('v');
           }
-
-          if (!videoId) {
-            throw new Error('Invalid YouTube URL');
-          }
-
+          if (!videoId) throw new Error('Invalid YouTube URL');
           setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
           setIsYouTube(true);
         } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
@@ -45,52 +40,69 @@ const Home = () => {
     }
   };
 
+  const bg = useColorModeValue('white', 'gray.900');
+  const textColor = useColorModeValue('black', 'whiteAlpha.900');
+  const borderColor = useColorModeValue('black', 'whiteAlpha.700');
+  const color = useColorModeValue("white", "gray.900");
+
   return (
-    <div>
-    <Center className='text-3xl font-bold mt-6'> Video Canvas Notes </Center>
-      <Box className='mb-4 p-4'>
-        <input
-        type="text"
+    <ColorModeProvider>
+      <Box bg={bg} color={textColor} paddingY='4'>
+        <Flex justify='space-between' marginX='4'>
+          <Text color={color}>asdsadsa</Text>
+          <Text className='text-3xl font-bold'> Video Canvas Notes </Text>
+          <ColorModeButton/>
+        </Flex>
+
+        <Box className="mb-4 p-4">
+        <Input
         placeholder="Paste video URL and press Enter"
         value={inputUrl}
         onChange={(e) => setInputUrl(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="border-2 border-black focus:outline-none focus:border-blue-800 p-2 w-full mb-4 "
-      />
-
-      {videoUrl && isYouTube && (
-        <Center>
-            <iframe
-          src={videoUrl}
-          className="w-[70vw] h-[70vh]"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+        className={`border-2 focus:outline-none p-2 w-full mb-4`}
+        borderColor={borderColor}
+        bg={useColorModeValue('#f9f9f9', '#1a202c')}
+        color={textColor}
+        mb={4}
         />
-        </Center>
-      )}
 
-      {videoUrl && !isYouTube && (
-        <Center>
-            <video
-            src={videoUrl}
-            controls
-            onError={() => setError('❌ Could not load the video.')}
-            />
-        </Center>
-      )}
 
-      {error && <Center className="text-red-500">{error}</Center>}
+          {videoUrl && isYouTube && (
+            <Center>
+              <iframe
+                src={videoUrl}
+                className="w-[70vw] h-[70vh]"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </Center>
+          )}
+
+          {videoUrl && !isYouTube && (
+            <Center>
+              <video
+                src={videoUrl}
+                controls
+                onError={() => setError('❌ Could not load the video.')}
+              />
+            </Center>
+          )}
+
+          {error && <Center className="text-red-500">{error}</Center>}
+        </Box>
+
+        <Flex wrap="wrap">
+          <Box width="49vw">
+            <Notepad />
+          </Box>
+          <Box width="49vw">
+            <Whiteboard />
+          </Box>
+        </Flex>
       </Box>
-      <Flex wrap="wrap" className='mb-6'>
-        <Box width='49vw'>
-          <Notepad />
-        </Box>
-        <Box width='49vw'>
-          <Whiteboard />
-        </Box>
-    </Flex>
-    </div>
+    </ColorModeProvider>
   );
-}
+};
 
 export default Home;

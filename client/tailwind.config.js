@@ -9,6 +9,9 @@ export default {
   },
   theme: {
     extend: {},
+    fontFamily: {
+        openSans: ["Open Sans", 'sans-serif'],
+      },
   },
   plugins: [],
 }

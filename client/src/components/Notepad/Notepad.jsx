@@ -1,8 +1,16 @@
-import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
+import { useColorModeValue } from "../ui/color-mode";
 
 const Notepad = () => {
   const [content, setContent] = useState("");
+
+  const bg = useColorModeValue("white", "gray.900");
+  const color = useColorModeValue("black", "white");
+  const borderColor = useColorModeValue("gray.300", "gray.600");
+  const btnBg = useColorModeValue("black", "white");
+  const btnColor = useColorModeValue("white", "black");
+  const btnHoverBg = useColorModeValue("gray.800", "gray.300");
 
   useEffect(() => {
     const saved = localStorage.getItem("windows-notepad");
@@ -23,26 +31,40 @@ const Notepad = () => {
   };
 
   return (
-    <Flex direction="column" p='2' flex="1" height="100vh">
-      <Flex justify="space-between" align="center" mb={4}>
-        <Text fontSize="xl" fontWeight="bold">📝 Notepad</Text>
-        <Button colorScheme="blue" onClick={handleDownload}>
+    <Flex direction="column" p="2" flex="1" bg={bg} color={color} minHeight="100vh">
+      <Flex justify="space-between" align="center" mb="3">
+        <Text fontSize="xl" fontWeight="bold">
+          📝 Notepad
+        </Text>
+        <Button
+          onClick={handleDownload}
+          bg={btnBg}
+          color={btnColor}
+          _hover={{ bg: btnHoverBg }}
+          px={4}
+          py={2}
+          rounded="md"
+          className="font-openSans"
+        >
           Save as .txt
         </Button>
       </Flex>
 
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Start typing here..."
-        resize="none"
-        height="100%"
-        flex="1"
-        fontFamily="monospace"
-        bg="white"
-        borderColor="gray.300"
-        _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce" }}
-      />
+      <Box height="100vh">
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Start typing here..."
+          resize="none"
+          flex="1"
+          height="100%"
+          bg={bg}
+          color={color}
+          borderColor={borderColor}
+          _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce" }}
+          className="font-openSans"
+        />
+      </Box>
     </Flex>
   );
 };

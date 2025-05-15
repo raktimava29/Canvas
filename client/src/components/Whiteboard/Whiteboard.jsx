@@ -1,7 +1,8 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { useRef, useEffect, useState } from "react";
 import MySlider from "./Slider";
 import MyPicker from "./Color";
+import { useColorModeValue } from "../ui/color-mode";
 
 const Whiteboard = () => {
   const canvasRef = useRef(null);
@@ -10,11 +11,18 @@ const Whiteboard = () => {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
-  const [strokeColor, setStrokeColor] = useState("#000000");
+
+  const defaultStroke = useColorModeValue("#000000", "#ffffff");
+  const [strokeColor, setStrokeColor] = useState(defaultStroke);
+
   const [history, setHistory] = useState([]);
   const [redoHistory, setRedoHistory] = useState([]);
 
   const maxHistoryLength = 20;
+
+  const bg = useColorModeValue("white", "gray.900");
+
+  const borderColor = useColorModeValue("black", "white");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,7 +57,11 @@ const Whiteboard = () => {
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [strokeColor, lineWidth]);
+
+  useEffect(() => {
+    setStrokeColor(defaultStroke);
+  }, [defaultStroke]);
 
   const getCanvasCoords = (nativeEvent) => {
     const canvas = canvasRef.current;
@@ -138,12 +150,25 @@ const Whiteboard = () => {
   };
 
   return (
-    <Flex direction="column" flex='1'>
-      <Flex justify="space-between" align="center" py={2} px={4} borderBottom="2px" borderColor="black">
+    <Flex direction="column" flex="1">
+      <Flex
+        justify="space-between"
+        align="center"
+        py={2}
+        px={4}
+        borderBottom="2px"
+        borderColor={borderColor}
+      >
         <Box>
-          <button onClick={clearCanvas} className="px-5 py-2.5 bg-red-600 text-white rounded">Clear</button>
-          <button onClick={undo} className="px-5 py-2.5 bg-blue-600 text-white rounded ml-2">Undo</button>
-          <button onClick={redo} className="px-5 py-2.5 bg-green-600 text-white rounded ml-2">Redo</button>
+          <Button onClick={clearCanvas} size='md' className="bg-red-600 hover:bg-red-500 font-openSans">
+            Clear
+          </Button>
+          <Button onClick={undo} size='md' className="bg-blue-600 hover:bg-blue-500 ml-2 font-openSans">
+            Undo
+          </Button>
+          <Button onClick={clearCanvas} size='md' className="bg-green-600 hover:bg-green-500 ml-2 font-openSans">
+            Redo
+          </Button>
         </Box>
         <MySlider value={lineWidth} onChange={setLineWidth} />
         <MyPicker value={strokeColor} onExchange={setStrokeColor} />
@@ -151,16 +176,10 @@ const Whiteboard = () => {
 
       <Box
         ref={scrollContainerRef}
-        className="overflow-auto no-scrollbar rounded-md mt-1 h-[90vh]"
-        borderWidth="2px"
-        borderColor="black"
-        // css={{
-        // '&::-webkit-scrollbar': {
-        // display: 'none',
-        // },
-        // scrollbarWidth: 'none',     // Firefox
-        // msOverflowStyle: 'none',    // IE & Edge
-        // }}
+        className="overflow-auto no-scrollbar rounded-md mt-1 h-[100vh]"
+        borderWidth="1px"
+        borderColor={borderColor}
+        bg={bg}
       >
         <canvas
           ref={canvasRef}
@@ -168,7 +187,8 @@ const Whiteboard = () => {
           onMouseMove={draw}
           onMouseUp={endDrawing}
           onMouseLeave={endDrawing}
-          className="cursor-crosshair block w-full border border-black"
+          className="cursor-crosshair block w-full border"
+          style={{ borderColor }}
         />
       </Box>
     </Flex>
