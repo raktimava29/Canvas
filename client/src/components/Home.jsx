@@ -50,7 +50,7 @@ const Home = () => {
       <Box bg={bg} color={textColor} paddingY='4'>
         <Flex justify='space-between' marginX='4'>
           <Text color={color}>asdsadsa</Text>
-          <Text className='text-3xl font-bold'> Video Canvas Notes </Text>
+          <Text className='text-3xl font-bold'> Study Buddy </Text>
           <ColorModeButton/>
         </Flex>
 
@@ -62,7 +62,7 @@ const Home = () => {
         onKeyDown={handleKeyDown}
         className={`border-2 focus:outline-none p-2 w-full mb-4`}
         borderColor={borderColor}
-        bg={useColorModeValue('#f9f9f9', '#1a202c')}
+        bg={useColorModeValue('#f9f9f9', '#00000')}
         color={textColor}
         mb={4}
         />
