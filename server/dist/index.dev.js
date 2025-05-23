@@ -6,11 +6,11 @@ var dotenv = require('dotenv');
 
 var cors = require('cors');
 
-var app = express();
-var PORT = process.env.PORT || 5000;
 dotenv.config();
+var app = express();
 app.use(cors());
 app.use(express.json());
+var PORT = process.env.PORT;
 app.get('/', function (req, res) {
   res.send('API is running...');
 });
