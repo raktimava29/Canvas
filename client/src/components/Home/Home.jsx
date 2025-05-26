@@ -1,8 +1,8 @@
 import { Box, Center, Flex, Heading, Input, Text } from '@chakra-ui/react';
 import { useState } from 'react';
-import Notepad from './Notepad/Notepad';
-import Whiteboard from './Whiteboard/Whiteboard';
-import { ColorModeProvider, ColorModeButton, useColorModeValue } from './ui/color-mode';
+import Notepad from '../Notepad/Notepad';
+import Whiteboard from '../Whiteboard/Whiteboard';
+import { ColorModeProvider, ColorModeButton, useColorModeValue } from '../ui/color-mode';
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState('');

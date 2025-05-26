@@ -13,8 +13,20 @@ var userSchema = mongoose.Schema({
     required: true
   },
   password: {
+    type: String // Not required for Google OAuth users
+
+  },
+  googleId: {
+    type: String // Only set if user logs in via Google
+
+  },
+  avatar: {
     type: String,
-    required: true
+    "default": ""
+  },
+  isOAuth: {
+    type: Boolean,
+    "default": false
   }
 }, {
   timestamps: true
