@@ -48,10 +48,14 @@ const Home = () => {
   return (
     <ColorModeProvider>
       <Box bg={bg} color={textColor} paddingY='4'>
-        <Flex justify='space-between' marginX='4'>
-          <Text color={color}>asdsadsa</Text>
-          <Text className='text-3xl font-bold'> Study Buddy </Text>
-          <ColorModeButton/>
+        <Flex justify="space-between" marginX="4" align="center">
+          <Box w="40px" />
+          <Text className="text-3xl font-bold" textAlign="center" flex="1">
+            Study Buddy
+          </Text>
+          <Box w="40px">
+            <ColorModeButton/>
+          </Box>
         </Flex>
 
         <Box className="mb-4 p-4">
