@@ -1,16 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const generateToken = require('../config/genToken')
 
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
-};
-
-// @route   POST /api/users/register
+// @desc    Register a new user
+// @route   POST /api/user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -36,7 +30,8 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
-// @route   POST /api/users/login
+// @desc    Authenticate user & get token
+// @route   POST /api/user/login
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -56,7 +51,8 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
-// @route   POST /api/users/google
+// @desc    Google OAuth login
+// @route   POST /api/user/google
 const googleLogin = asyncHandler(async (req, res) => {
   const { name, email, googleId, avatar } = req.body;
 
@@ -80,4 +76,17 @@ const googleLogin = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { registerUser, loginUser, googleLogin };
+// @desc    Get all users (for testing or search)
+// @route   GET /api/user
+const allUsers = asyncHandler(async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        name: { $regex: req.query.search, $options: "i" },
+      }
+    : {};
+
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.json(users);
+});
+
+module.exports = { registerUser, loginUser, googleLogin, allUsers};

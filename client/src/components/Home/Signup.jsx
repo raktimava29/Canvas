@@ -7,6 +7,7 @@ import {
   Fieldset,
   Input,
   InputGroup,
+  Text
 } from "@chakra-ui/react";
 import logo from "../../assets/icons8-study-smarter-64.png";
 import google from "../../assets/Frame.png";
@@ -62,7 +63,7 @@ const Signup = () => {
   const borderColor = useColorModeValue("#CBD5E0", "#343A40");
   const textColor = useColorModeValue("#1A202C", "#FFFFFF");
   const subTextColor = useColorModeValue("#4A5568", "#CCCCCC");
-  const linkColor = useColorModeValue("#2B6CB0", "#C1C2C5");
+  const linkColor = useColorModeValue("#2B6CB0", "#2B6CB0");
   const footerColor = useColorModeValue("#A0AEC0", "#5C5F66");
   const bgColor = useColorModeValue("#FFFFFF", "#000000");
   const footerBg = useColorModeValue("#EDF2F7", "#121212");
@@ -161,16 +162,16 @@ const Signup = () => {
                     Create an Account
                   </Button>
 
-                  <p className="text-base" style={{ color: subTextColor }}>
+                  <Text className="text-base" style={{ color: subTextColor }}>
                     Already have an account?{" "}
                     <span
-                      className="cursor-pointer"
-                      style={{ color: linkColor }}
-                      onClick={() => navigateTo("/login")}
+                        className="cursor-pointer"
+                        style={{ color: linkColor }}
+                        onClick={() => navigateTo("/login")}
                     >
-                      Sign In
+                        Sign In
                     </span>
-                  </p>
+                    </Text>
                 </Flex>
               </Box>
             </Flex>

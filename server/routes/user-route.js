@@ -1,13 +1,12 @@
-const express = require("express");
-const router = express.Router();
-const {
-  registerUser,
-  loginUser,
-  googleLogin,
-} = require("../controllers/userController");
+const express = require('express');
+const { registerUser, loginUser, googleLogin, allUsers } = require('../controllers/user-controller');
+const protect = require('../config/protect');
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/google", googleLogin);
+const router = express.Router();
+
+router.route('/').post(registerUser).get(protect, allUsers);
+
+router.post('/login', loginUser);
+router.post('/google', googleLogin);
 
 module.exports = router;

@@ -6,16 +6,8 @@ var User = require("../models/userModel");
 
 var bcrypt = require("bcryptjs");
 
-var jwt = require("jsonwebtoken"); // Generate JWT
-
-
-var generateToken = function generateToken(id) {
-  return jwt.sign({
-    id: id
-  }, process.env.JWT_SECRET, {
-    expiresIn: "30d"
-  });
-}; // @route   POST /api/users/register
+var generateToken = require('../config/genToken'); // @desc    Register a new user
+// @route   POST /api/user
 
 
 var registerUser = asyncHandler(function _callee(req, res) {
@@ -83,7 +75,8 @@ var registerUser = asyncHandler(function _callee(req, res) {
       }
     }
   });
-}); // @route   POST /api/users/login
+}); // @desc    Authenticate user & get token
+// @route   POST /api/user/login
 
 var loginUser = asyncHandler(function _callee2(req, res) {
   var _req$body2, email, password, user, isMatch;
@@ -144,7 +137,8 @@ var loginUser = asyncHandler(function _callee2(req, res) {
       }
     }
   });
-}); // @route   POST /api/users/google
+}); // @desc    Google OAuth login
+// @route   POST /api/user/google
 
 var googleLogin = asyncHandler(function _callee3(req, res) {
   var _req$body3, name, email, googleId, avatar, user;
@@ -193,9 +187,42 @@ var googleLogin = asyncHandler(function _callee3(req, res) {
       }
     }
   });
+}); // @desc    Get all users (for testing or search)
+// @route   GET /api/user
+
+var allUsers = asyncHandler(function _callee4(req, res) {
+  var keyword, users;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          keyword = req.query.search ? {
+            name: {
+              $regex: req.query.search,
+              $options: "i"
+            }
+          } : {};
+          _context4.next = 3;
+          return regeneratorRuntime.awrap(User.find(keyword).find({
+            _id: {
+              $ne: req.user._id
+            }
+          }));
+
+        case 3:
+          users = _context4.sent;
+          res.json(users);
+
+        case 5:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
 });
 module.exports = {
   registerUser: registerUser,
   loginUser: loginUser,
-  googleLogin: googleLogin
+  googleLogin: googleLogin,
+  allUsers: allUsers
 };

@@ -1,15 +1,17 @@
 "use strict";
 
-var express = require("express");
+var express = require('express');
 
-var router = express.Router();
-
-var _require = require("../controllers/userController"),
+var _require = require('../controllers/user-controller'),
     registerUser = _require.registerUser,
     loginUser = _require.loginUser,
-    googleLogin = _require.googleLogin;
+    googleLogin = _require.googleLogin,
+    allUsers = _require.allUsers;
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/google", googleLogin);
+var protect = require('../config/protect');
+
+var router = express.Router();
+router.route('/').post(registerUser).get(protect, allUsers);
+router.post('/login', loginUser);
+router.post('/google', googleLogin);
 module.exports = router;
