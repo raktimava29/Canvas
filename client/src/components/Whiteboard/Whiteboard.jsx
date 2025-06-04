@@ -1,8 +1,7 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useRef, useEffect, useState } from "react";
 import MySlider from "./Slider";
 import MyPicker from "./Color";
-import { useColorModeValue } from "../ui/color-mode";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -35,7 +34,6 @@ const Whiteboard = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = scrollContainerRef.current;
-
     const width = container.clientWidth;
     const hugeHeight = 20000;
 
@@ -50,19 +48,14 @@ const Whiteboard = () => {
 
     const initialImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
     setHistory([initialImage]);
-
   }, []);
 
   useEffect(() => {
-    if (ctxRef.current) {
-      ctxRef.current.strokeStyle = strokeColor;
-    }
+    if (ctxRef.current) ctxRef.current.strokeStyle = strokeColor;
   }, [strokeColor]);
 
   useEffect(() => {
-    if (ctxRef.current) {
-      ctxRef.current.lineWidth = lineWidth;
-    }
+    if (ctxRef.current) ctxRef.current.lineWidth = lineWidth;
   }, [lineWidth]);
 
   useEffect(() => {
@@ -70,15 +63,13 @@ const Whiteboard = () => {
   }, [defaultStroke]);
 
   const getCanvasCoords = (nativeEvent) => {
-  const canvas = canvasRef.current;
-  const rect = canvas.getBoundingClientRect();
-
-  const x = nativeEvent.clientX - rect.left;
-  const y = nativeEvent.clientY - rect.top;
-
-  return { x, y };
-};
-
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: nativeEvent.clientX - rect.left,
+      y: nativeEvent.clientY - rect.top,
+    };
+  };
 
   const startDrawing = ({ nativeEvent }) => {
     const { x, y } = getCanvasCoords(nativeEvent);
@@ -90,8 +81,6 @@ const Whiteboard = () => {
   const draw = ({ nativeEvent }) => {
     if (!isDrawing) return;
     const { x, y } = getCanvasCoords(nativeEvent);
-    ctxRef.current.lineWidth = lineWidth;
-    ctxRef.current.strokeStyle = strokeColor;
     ctxRef.current.lineTo(x, y);
     ctxRef.current.stroke();
   };
@@ -102,8 +91,7 @@ const Whiteboard = () => {
     setIsDrawing(false);
 
     const canvas = canvasRef.current;
-    const ctx = ctxRef.current;
-    const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const snapshot = ctxRef.current.getImageData(0, 0, canvas.width, canvas.height);
 
     setHistory((prev) => {
       const updated = [...prev, snapshot];
@@ -116,11 +104,13 @@ const Whiteboard = () => {
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-    const currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
     setHistory((prev) => {
-      const updated = [...prev, currentImage];
+      const updated = [...prev, snapshot];
       return updated.length > maxHistoryLength ? updated.slice(1) : updated;
     });
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     scrollContainerRef.current.scrollTop = 0;
     setRedoHistory([]);
@@ -133,10 +123,7 @@ const Whiteboard = () => {
       const current = updated.pop();
       setRedoHistory((r) => [...r, current]);
       const previous = updated[updated.length - 1];
-      const canvas = canvasRef.current;
-      const ctx = ctxRef.current;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.putImageData(previous, 0, 0);
+      ctxRef.current.putImageData(previous, 0, 0);
       return updated;
     });
   };
@@ -150,11 +137,7 @@ const Whiteboard = () => {
         const newHistory = [...h, next];
         return newHistory.length > maxHistoryLength ? newHistory.slice(1) : newHistory;
       });
-
-      const canvas = canvasRef.current;
-      const ctx = ctxRef.current;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.putImageData(next, 0, 0);
+      ctxRef.current.putImageData(next, 0, 0);
       return updated;
     });
   };
@@ -162,15 +145,11 @@ const Whiteboard = () => {
   const invertBlackWhite = (imageData) => {
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
-      const r = data[i], g = data[i + 1], b = data[i + 2];
-
-      const isBlack = r === 0 && g === 0 && b === 0;
-      const isWhite = r === 255 && g === 255 && b === 255;
-
-      if (isBlack) {
-        data[i] = data[i + 1] = data[i + 2] = 255; // to white
-      } else if (isWhite) {
-        data[i] = data[i + 1] = data[i + 2] = 0; // to black
+      const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+      if (r === 0 && g === 0 && b === 0) {
+        data[i] = data[i + 1] = data[i + 2] = 255;
+      } else if (r === 255 && g === 255 && b === 255) {
+        data[i] = data[i + 1] = data[i + 2] = 0;
       }
     }
     return imageData;
@@ -179,18 +158,17 @@ const Whiteboard = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-
     if (!canvas || !ctx || !prevDefaultStroke) return;
 
-    const switchingFromDarkToLight = prevDefaultStroke === "#ffffff" && defaultStroke === "#000000";
-    const switchingFromLightToDark = prevDefaultStroke === "#000000" && defaultStroke === "#ffffff";
+    const switchingDarkToLight = prevDefaultStroke === "#ffffff" && defaultStroke === "#000000";
+    const switchingLightToDark = prevDefaultStroke === "#000000" && defaultStroke === "#ffffff";
 
-    if (switchingFromDarkToLight || switchingFromLightToDark) {
+    if (switchingDarkToLight || switchingLightToDark) {
       const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const inverted = invertBlackWhite(image);
       ctx.putImageData(inverted, 0, 0);
     }
-  }, [defaultStroke, prevDefaultStroke]); 
+  }, [defaultStroke, prevDefaultStroke]);
 
   return (
     <Flex direction="column" flex="1">
@@ -199,27 +177,26 @@ const Whiteboard = () => {
         align="center"
         py={2}
         px={4}
-        borderBottom="2px"
-        borderColor={borderColor}
       >
-        <Box>
-          <Button onClick={clearCanvas} size='md' className="bg-red-600 hover:bg-red-500 font-openSans">
+        <Flex gap={2}>
+          <Button colorScheme="red" onClick={clearCanvas}>
             Clear
           </Button>
-          <Button onClick={undo} size='md' className="bg-blue-600 hover:bg-blue-500 ml-2 font-openSans">
+          <Button colorScheme="blue" onClick={undo}>
             Undo
           </Button>
-          <Button onClick={redo} size='md' className="bg-green-600 hover:bg-green-500 ml-2 font-openSans">
+          <Button colorScheme="green" onClick={redo}>
             Redo
           </Button>
-        </Box>
+        </Flex>
+
         <MySlider value={lineWidth} onChange={setLineWidth} />
         <MyPicker value={strokeColor} onExchange={setStrokeColor} />
       </Flex>
 
       <Box
         ref={scrollContainerRef}
-        className="overflow-auto no-scrollbar rounded-md mt-1 h-[100vh]"
+        className="overflow-auto no-scrollbar rounded-md h-[100vh]"
         borderWidth="1px"
         borderColor={borderColor}
         bg={bg}
@@ -230,7 +207,7 @@ const Whiteboard = () => {
           onMouseMove={draw}
           onMouseUp={endDrawing}
           onMouseLeave={endDrawing}
-          className="cursor-crosshair block w-full border"
+          className="cursor-crosshair block w-full"
           style={{ borderColor }}
         />
       </Box>

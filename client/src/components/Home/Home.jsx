@@ -1,8 +1,30 @@
-import { Box, Center, Flex, Heading, Input, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Flex,
+  Input,
+  Text,
+  useColorModeValue,
+  IconButton,
+  useColorMode,
+} from '@chakra-ui/react';
+import { SunIcon, MoonIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
-import { ColorModeProvider, ColorModeButton, useColorModeValue } from '../ui/color-mode';
+
+const ColorModeButton = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <IconButton
+      size="md"
+      aria-label="Toggle color mode"
+      onClick={toggleColorMode}
+      icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+      variant="ghost"
+    />
+  );
+};
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState('');
@@ -43,69 +65,64 @@ const Home = () => {
   const bg = useColorModeValue('white', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
-  const color = useColorModeValue("white", "gray.900");
 
   return (
-    <ColorModeProvider>
-      <Box bg={bg} color={textColor} paddingY='4'>
-        <Flex justify="space-between" marginX="4" align="center">
-          <Box w="40px" />
-          <Text className="text-3xl font-bold" textAlign="center" flex="1">
-            Study Buddy
-          </Text>
-          <Box w="40px">
-            <ColorModeButton/>
-          </Box>
-        </Flex>
+    <Box bg={bg} color={textColor} py={4} className="font-openSans">
+      <Flex justify="space-between" mx={4} align="center">
+        <Box w="40px" />
+        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1">
+          Study Buddy
+        </Text>
+        <Box w="40px">
+          <ColorModeButton />
+        </Box>
+      </Flex>
 
-        <Box className="mb-4 p-4">
+      <Box p={4} mb={4}>
         <Input
-        placeholder="Paste video URL and press Enter"
-        value={inputUrl}
-        onChange={(e) => setInputUrl(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className={`border-2 focus:outline-none p-2 w-full mb-4`}
-        borderColor={borderColor}
-        bg={useColorModeValue('#f9f9f9', '#00000')}
-        color={textColor}
-        mb={4}
+          placeholder="Paste video URL and press Enter"
+          value={inputUrl}
+          onChange={(e) => setInputUrl(e.target.value)}
+          onKeyDown={handleKeyDown}
+          borderColor={borderColor}
+          color={textColor}
+          mb={4}
         />
 
+        {videoUrl && isYouTube && (
+          <Center>
+            <iframe
+              src={videoUrl}
+              className="w-[70vw] h-[70vh]"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </Center>
+        )}
 
-          {videoUrl && isYouTube && (
-            <Center>
-              <iframe
-                src={videoUrl}
-                className="w-[70vw] h-[70vh]"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </Center>
-          )}
+        {videoUrl && !isYouTube && (
+          <Center>
+            <video
+              src={videoUrl}
+              controls
+              onError={() => setError('❌ Could not load the video.')}
+              style={{ maxWidth: '70vw', maxHeight: '70vh' }}
+            />
+          </Center>
+        )}
 
-          {videoUrl && !isYouTube && (
-            <Center>
-              <video
-                src={videoUrl}
-                controls
-                onError={() => setError('❌ Could not load the video.')}
-              />
-            </Center>
-          )}
-
-          {error && <Center className="text-red-500">{error}</Center>}
-        </Box>
-
-        <Flex wrap="wrap">
-          <Box width="49vw">
-            <Notepad />
-          </Box>
-          <Box width="49vw">
-            <Whiteboard />
-          </Box>
-        </Flex>
+        {error && <Center color="red.500">{error}</Center>}
       </Box>
-    </ColorModeProvider>
+
+      <Flex >
+        <Box width={'49%'}>
+          <Notepad />
+        </Box>
+        <Box width={'50%'}>
+          <Whiteboard />
+        </Box>
+      </Flex>
+    </Box>
   );
 };
 

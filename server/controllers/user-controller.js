@@ -51,22 +51,41 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Google OAuth login
-// @route   POST /api/user/google
+// @desc    Google OAuth Signup
+// @route   POST /api/user/google-signup
+const googleSignup = asyncHandler(async (req, res) => {
+  const { email, username, googleId } = req.body;
+
+  if (!email || !username || !googleId) throw new Error("Missing required fields");
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error("User already exists. Please log in.");
+
+  const user = await User.create({
+    name: username,
+    email,
+    password: googleId, // not used, but required by schema
+    isOAuth: true,
+  });
+
+  res.status(201).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    token: generateToken(user._id),
+  });
+});
+
+// @desc    Google OAuth Login
+// @route   POST /api/user/google-login
 const googleLogin = asyncHandler(async (req, res) => {
-  const { name, email, googleId, avatar } = req.body;
+  const { email } = req.body;
 
-  let user = await User.findOne({ email });
+  if (!email) throw new Error("Missing email");
 
-  if (!user) {
-    user = await User.create({
-      name,
-      email,
-      googleId,
-      avatar,
-      isOAuth: true,
-    });
-  }
+  const user = await User.findOne({ email });
+
+  if (!user || !user.isOAuth) throw new Error("Account not found. Please sign up first.");
 
   res.json({
     _id: user._id,
@@ -89,4 +108,4 @@ const allUsers = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
-module.exports = { registerUser, loginUser, googleLogin, allUsers};
+module.exports = { registerUser, loginUser, googleSignup, googleLogin, allUsers};

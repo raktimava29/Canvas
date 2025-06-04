@@ -137,41 +137,99 @@ var loginUser = asyncHandler(function _callee2(req, res) {
       }
     }
   });
-}); // @desc    Google OAuth login
-// @route   POST /api/user/google
+}); // @desc    Google OAuth Signup
+// @route   POST /api/user/google-signup
 
-var googleLogin = asyncHandler(function _callee3(req, res) {
-  var _req$body3, name, email, googleId, avatar, user;
+var googleSignup = asyncHandler(function _callee3(req, res) {
+  var _req$body3, email, username, googleId, existingUser, user;
 
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          _req$body3 = req.body, name = _req$body3.name, email = _req$body3.email, googleId = _req$body3.googleId, avatar = _req$body3.avatar;
-          _context3.next = 3;
+          _req$body3 = req.body, email = _req$body3.email, username = _req$body3.username, googleId = _req$body3.googleId;
+
+          if (!(!email || !username || !googleId)) {
+            _context3.next = 3;
+            break;
+          }
+
+          throw new Error("Missing required fields");
+
+        case 3:
+          _context3.next = 5;
           return regeneratorRuntime.awrap(User.findOne({
             email: email
           }));
 
-        case 3:
-          user = _context3.sent;
+        case 5:
+          existingUser = _context3.sent;
 
-          if (user) {
+          if (!existingUser) {
             _context3.next = 8;
             break;
           }
 
-          _context3.next = 7;
+          throw new Error("User already exists. Please log in.");
+
+        case 8:
+          _context3.next = 10;
           return regeneratorRuntime.awrap(User.create({
-            name: name,
+            name: username,
             email: email,
-            googleId: googleId,
-            avatar: avatar,
+            password: googleId,
+            // not used, but required by schema
             isOAuth: true
           }));
 
-        case 7:
+        case 10:
           user = _context3.sent;
+          res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            token: generateToken(user._id)
+          });
+
+        case 12:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  });
+}); // @desc    Google OAuth Login
+// @route   POST /api/user/google-login
+
+var googleLogin = asyncHandler(function _callee4(req, res) {
+  var email, user;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          email = req.body.email;
+
+          if (email) {
+            _context4.next = 3;
+            break;
+          }
+
+          throw new Error("Missing email");
+
+        case 3:
+          _context4.next = 5;
+          return regeneratorRuntime.awrap(User.findOne({
+            email: email
+          }));
+
+        case 5:
+          user = _context4.sent;
+
+          if (!(!user || !user.isOAuth)) {
+            _context4.next = 8;
+            break;
+          }
+
+          throw new Error("Account not found. Please sign up first.");
 
         case 8:
           res.json({
@@ -183,18 +241,18 @@ var googleLogin = asyncHandler(function _callee3(req, res) {
 
         case 9:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
     }
   });
 }); // @desc    Get all users (for testing or search)
 // @route   GET /api/user
 
-var allUsers = asyncHandler(function _callee4(req, res) {
+var allUsers = asyncHandler(function _callee5(req, res) {
   var keyword, users;
-  return regeneratorRuntime.async(function _callee4$(_context4) {
+  return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
-      switch (_context4.prev = _context4.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
           keyword = req.query.search ? {
             name: {
@@ -202,7 +260,7 @@ var allUsers = asyncHandler(function _callee4(req, res) {
               $options: "i"
             }
           } : {};
-          _context4.next = 3;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(User.find(keyword).find({
             _id: {
               $ne: req.user._id
@@ -210,12 +268,12 @@ var allUsers = asyncHandler(function _callee4(req, res) {
           }));
 
         case 3:
-          users = _context4.sent;
+          users = _context5.sent;
           res.json(users);
 
         case 5:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });
@@ -223,6 +281,7 @@ var allUsers = asyncHandler(function _callee4(req, res) {
 module.exports = {
   registerUser: registerUser,
   loginUser: loginUser,
+  googleSignup: googleSignup,
   googleLogin: googleLogin,
   allUsers: allUsers
 };
