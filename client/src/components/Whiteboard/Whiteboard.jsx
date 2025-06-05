@@ -28,7 +28,7 @@ const Whiteboard = () => {
 
   const maxHistoryLength = 20;
 
-  const bg = useColorModeValue("white", "gray.900");
+  const bgColor = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue("black", "white");
 
   useEffect(() => {
@@ -196,10 +196,10 @@ const Whiteboard = () => {
 
       <Box
         ref={scrollContainerRef}
-        className="overflow-auto no-scrollbar rounded-md h-[100vh]"
+        className="overflow-auto no-scrollbar rounded-md h-[99.7vh]"
         borderWidth="1px"
         borderColor={borderColor}
-        bg={bg}
+        bg={bgColor}
       >
         <canvas
           ref={canvasRef}

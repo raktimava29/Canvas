@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 const Notepad = () => {
   const [content, setContent] = useState("");
 
-  const bg = useColorModeValue("white", "gray.900");
+  const bg = useColorModeValue("gray.100", "gray.900");
   const color = useColorModeValue("black", "white");
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const btnBg = useColorModeValue("black", "white");

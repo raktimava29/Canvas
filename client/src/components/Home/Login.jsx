@@ -8,31 +8,18 @@ import {
   InputGroup,
   Text,
   IconButton,
-  useColorMode,
   useColorModeValue,
   useToast,
   InputRightElement,
 } from "@chakra-ui/react";
-import logo from "../../assets/icons8-study-smarter-64.png";
+import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { SunIcon, MoonIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-
-const ColorModeButton = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <IconButton
-      size="md"
-      variant="ghost"
-      icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-      aria-label="Toggle Color Mode"
-      onClick={toggleColorMode}
-    />
-  );
-};
+import ColorModeButton from "../Misc/ColorToggle";
 
 const Login = () => {
   const navigateTo = useNavigate();
@@ -56,51 +43,51 @@ const Login = () => {
   const footerColor = useColorModeValue("gray.500", "gray.400");
 
   const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const { data } = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          }
-        );
-        console.log(data)
-        await axios.post('/api/user/google-login', {
-          email: data.email,
-          googleId: data.sub,
-        });
-
-        toast({
-          title: "Logged in with Google!",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        navigateTo("/google-login");
-      } catch (error) {
-        console.error("Google login failed:", error?.response?.data || error.message);
-
-        toast({
-          title: "Google login failed.",
-          description: error?.response?.data?.message || "Something went wrong.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    },
-    onError: () => {
+  onSuccess: async (tokenResponse) => {
+    try {
+      const { data: googleData } = await axios.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.access_token}`,
+          },
+        }
+      );
+      
+      const { data: userData } = await axios.post('/api/user/google-login', {
+        email: googleData.email,
+        googleId: googleData.sub,
+      });
+      localStorage.setItem("userInfo", JSON.stringify(userData));
       toast({
-        title: "Google authentication was cancelled or failed.",
+        title: "Logged in with Google!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      navigateTo("/");
+    } catch (error) {
+      console.error("Google login failed:", error?.response?.data || error.message);
+
+      toast({
+        title: "Google login failed.",
+        description: error?.response?.data?.message || "Something went wrong.",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-    },
-  });
+    }
+  },
+  onError: () => {
+    toast({
+      title: "Google authentication was cancelled or failed.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  },
+});
 
   const handleSubmit = async (e) => {
     e.preventDefault();

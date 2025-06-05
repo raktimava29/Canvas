@@ -1,36 +1,30 @@
 import {
   Box,
+  Button,
   Center,
   Flex,
   Input,
   Text,
   useColorModeValue,
-  IconButton,
-  useColorMode,
 } from '@chakra-ui/react';
-import { SunIcon, MoonIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
-
-const ColorModeButton = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <IconButton
-      size="md"
-      aria-label="Toggle color mode"
-      onClick={toggleColorMode}
-      icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-      variant="ghost"
-    />
-  );
-};
+import SideDrawer from '../Misc/SideDrawer';
+import UserProfileModal from '../Misc/Profile';
+import ColorModeButton from '../Misc/ColorToggle';
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [isYouTube, setIsYouTube] = useState(false);
   const [error, setError] = useState(null);
+  const [align,setAlign] = useState(true);
+
+  const press = () => {
+    {align ? setAlign(false) : setAlign(true)};
+    console.log(align);
+  }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -62,13 +56,15 @@ const Home = () => {
     }
   };
 
-  const bg = useColorModeValue('white', 'gray.900');
+  const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
   return (
     <Box bg={bg} color={textColor} py={4} className="font-openSans">
       <Flex justify="space-between" mx={4} align="center">
+        <SideDrawer/>
+        <UserProfileModal/>
         <Box w="40px" />
         <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1">
           Study Buddy
@@ -79,7 +75,8 @@ const Home = () => {
       </Flex>
 
       <Box p={4} mb={4}>
-        <Input
+        <Flex gap={4}>
+          <Input
           placeholder="Paste video URL and press Enter"
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
@@ -88,7 +85,8 @@ const Home = () => {
           color={textColor}
           mb={4}
         />
-
+        <Button onClick={press}>Press</Button>
+        </Flex>
         {videoUrl && isYouTube && (
           <Center>
             <iframe
@@ -114,14 +112,14 @@ const Home = () => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <Flex >
-        <Box width={'49%'}>
-          <Notepad />
-        </Box>
-        <Box width={'50%'}>
-          <Whiteboard />
-        </Box>
-      </Flex>
+      <Flex direction={align ? 'column' : 'row'}>
+      <Box width={align ? '100%' : '49%'}>
+        <Notepad />
+      </Box>
+      <Box width={align ? '98%' : '50%'} margin={align ? '20px' : '0px'}>
+        <Whiteboard />
+      </Box>
+    </Flex>
     </Box>
   );
 };

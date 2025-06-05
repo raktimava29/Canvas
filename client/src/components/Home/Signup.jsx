@@ -8,31 +8,18 @@ import {
   InputGroup,
   Text,
   IconButton,
-  useColorMode,
   useColorModeValue,
   useToast,
   InputRightElement,
 } from "@chakra-ui/react";
-import logo from "../../assets/icons8-study-smarter-64.png";
+import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { SunIcon, MoonIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
-
-const ColorModeButton = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <IconButton
-      size="md"
-      variant="ghost"
-      icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-      aria-label="Toggle Color Mode"
-      onClick={toggleColorMode}
-    />
-  );
-};
+import ColorModeButton from "../Misc/ColorToggle";
 
 const Signup = () => {
   const navigateTo = useNavigate();
