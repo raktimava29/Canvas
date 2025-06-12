@@ -8,20 +8,21 @@ var Content = require('../models/contentModel'); // @desc    Save or update note
 
 
 var saveContent = asyncHandler(function _callee(req, res) {
-  var _req$body, videoUrl, notepadText, userId, content;
+  var _req$body, videoUrl, notepadText, canvasImage, userId, content;
 
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _req$body = req.body, videoUrl = _req$body.videoUrl, notepadText = _req$body.notepadText;
+          _req$body = req.body, videoUrl = _req$body.videoUrl, notepadText = _req$body.notepadText, canvasImage = _req$body.canvasImage;
           userId = req.user._id;
           _context.next = 4;
           return regeneratorRuntime.awrap(Content.findOneAndUpdate({
             videoUrl: videoUrl,
             user: userId
           }, {
-            notepadText: notepadText
+            notepadText: notepadText,
+            canvasImage: canvasImage
           }, {
             upsert: true,
             "new": true
@@ -29,9 +30,19 @@ var saveContent = asyncHandler(function _callee(req, res) {
 
         case 4:
           content = _context.sent;
+
+          if (!(!videoUrl || !videoUrl.trim())) {
+            _context.next = 8;
+            break;
+          }
+
+          res.status(400);
+          throw new Error('Video URL is required');
+
+        case 8:
           res.json(content);
 
-        case 6:
+        case 9:
         case "end":
           return _context.stop();
       }

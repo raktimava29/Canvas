@@ -5,14 +5,19 @@ const Content = require('../models/contentModel');
 // @route   POST /api/content/save
 // @access  Private
 const saveContent = asyncHandler(async (req, res) => {
-  const { videoUrl, notepadText } = req.body;
+  const { videoUrl, notepadText, canvasImage } = req.body;
   const userId = req.user._id;
 
   const content = await Content.findOneAndUpdate(
     { videoUrl, user: userId },
-    { notepadText },
+    { notepadText, canvasImage },
     { upsert: true, new: true }
   );
+
+  if (!videoUrl || !videoUrl.trim()) {
+    res.status(400);
+    throw new Error('Video URL is required');
+  }
 
   res.json(content);
 });

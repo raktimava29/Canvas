@@ -1,5 +1,5 @@
 import { Box, Button, Flex, useColorModeValue } from "@chakra-ui/react";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import MySlider from "./Slider";
 import MyPicker from "./Color";
 
@@ -11,7 +11,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const Whiteboard = () => {
+const Whiteboard = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const ctxRef = useRef(null);
@@ -30,6 +30,24 @@ const Whiteboard = () => {
 
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue("black", "white");
+
+  useImperativeHandle(ref, () => ({
+  exportCanvasAsImage: () => {
+    const canvas = canvasRef.current;
+    return canvas.toDataURL("image/png");
+  },
+  loadCanvasFromImage: (dataURL) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = dataURL;
+  }
+}));
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -172,12 +190,7 @@ const Whiteboard = () => {
 
   return (
     <Flex direction="column" flex="1">
-      <Flex
-        justify="space-between"
-        align="center"
-        py={2}
-        px={4}
-      >
+      <Flex justify="space-between" align="center" py={2} px={4}>
         <Flex gap={2}>
           <Button colorScheme="red" onClick={clearCanvas}>
             Clear
@@ -213,6 +226,6 @@ const Whiteboard = () => {
       </Box>
     </Flex>
   );
-};
+});
 
 export default Whiteboard;

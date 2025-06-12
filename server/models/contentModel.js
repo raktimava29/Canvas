@@ -14,7 +14,11 @@ const ContentSchema = new mongoose.Schema(
     notepadText: { 
       type: String, 
       default: '' 
-    }
+    },
+    canvasImage: {
+      type: String,
+      default: '',
+    },
   }, 
   { 
     timestamps: true 
