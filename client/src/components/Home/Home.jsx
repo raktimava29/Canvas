@@ -7,7 +7,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
@@ -30,31 +30,31 @@ const Home = () => {
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
   const saveNotepad = async (note) => {
-    console.log('📤 Attempting to save notepad content...');
-    try {
-      const payload = {
+  try {
+    console.log("Saving note:", note);
+    console.log("For video URL:", videoUrl);
+
+    const res = await axios.post(
+      '/api/content/save',
+      {
         videoUrl: inputUrl,
         notepadText: note,
-      };
-
-      const headers = {
-        Authorization: `Bearer ${user?.token}`,
-        'Content-type': 'application/json',
-      };
-
-      console.log('Request Payload:', payload);
-      console.log('Request Headers:', headers);
-
-      const res = await axios.post('/api/content/save', payload, { headers });
-
-      console.log('✅ Notepad saved successfully:', res.data);
-    } catch (err) {
-      console.error('❌ Save failed:', err.response?.data || err.message);
-    }
-  };
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          'Content-type': 'application/json',
+        },
+      }
+    );
+    console.log('Notepad saved:', res.data);
+  } catch (err) {
+    console.error('Save failed:', err);
+  }
+};
 
   const fetchContent = async (url) => {
-    console.log('🔍 Fetching content for URL:', url);
+    console.log('Fetching content for URL:', url);
     try {
       const res = await axios.get('/api/content', {
         params: { videoUrl: url },
@@ -64,59 +64,57 @@ const Home = () => {
       });
 
       const data = res.data;
-      console.log('✅ Content fetched:', data);
+      console.log('Content fetched:', data);
 
       setNotepadText(data.notepadText || '');
       setIsReadOnly(data.user !== user?._id);
     } catch (err) {
-      console.error('❌ Fetch failed:', err.response?.data || err.message);
+      console.error('Fetch failed:', err.response?.data || err.message);
       setNotepadText('');
       setIsReadOnly(false);
     }
   };
-
+  
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      setError(null);
-      try {
-        const url = new URL(inputUrl);
-        let videoId = '';
+  if (e.key !== 'Enter') return;
+  setError(null);
+  try {
+    const url = new URL(inputUrl);
+    const hostname = url.hostname;
+    let videoId = '';
+    let originalUrl = inputUrl;
+    let isYouTube = false;
 
-        if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
-          if (url.hostname === 'youtu.be') {
-            videoId = url.pathname.slice(1);
-          } else {
-            videoId = url.searchParams.get('v');
-          }
-
-          if (!videoId) throw new Error('Invalid YouTube URL');
-          const finalUrl = `https://www.youtube.com/embed/${videoId}`;
-          console.log('🎥 Parsed YouTube embed URL:', finalUrl);
-          setVideoUrl(finalUrl);
-          setIsYouTube(true);
-          fetchContent(finalUrl);
-        } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
-          console.log('🎥 Using direct video URL:', inputUrl);
-          setVideoUrl(inputUrl);
-          setIsYouTube(false);
-          fetchContent(inputUrl);
-        } else {
-          throw new Error('Unsupported video format or platform');
-        }
-      } catch (err) {
-        console.error('❌ Invalid URL entered:', err.message);
-        setVideoUrl('');
-        setIsYouTube(false);
-        setError('❌ Invalid or unsupported video link.');
-      }
+    if (hostname.includes('youtube.com') || hostname === 'youtu.be') {
+    if (hostname === 'youtu.be') {
+      videoId = url.pathname.slice(1); 
+    } else if (url.pathname.startsWith('/shorts/')) {
+      videoId = url.pathname.split('/shorts/')[1];
+    } else {
+      videoId = url.searchParams.get('v');
     }
-  };
 
-  useEffect(() => {
-    if (videoUrl) {
-      fetchContent(videoUrl);
+    if (!videoId) throw new Error('Invalid YouTube URL');
+
+    originalUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
+    isYouTube = true;
+  } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
+      setVideoUrl(inputUrl);
+    } else {
+      throw new Error('Unsupported video format or platform');
     }
-  }, [videoUrl]);
+
+    setInputUrl(originalUrl);
+    setIsYouTube(isYouTube);
+    fetchContent(originalUrl);
+  } catch (err) {
+    console.error('❌ Invalid URL entered:', err.message);
+    setVideoUrl('');
+    setIsYouTube(false);
+    setError('❌ Invalid or unsupported video link.');
+  }
+};
 
   return (
     <Box bg={bg} color={textColor} py={4} className="font-openSans">
@@ -176,10 +174,7 @@ const Home = () => {
         <Box width="49%">
           <Notepad
             text={notepadText}
-            setText={(newText) => {
-              setNotepadText(newText);
-              saveNotepad(newText);
-            }}
+            setText={setNotepadText}
             isReadOnly={isReadOnly}
           />
         </Box>

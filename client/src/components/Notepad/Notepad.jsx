@@ -1,9 +1,6 @@
 import { Box, Button, Flex, Text, Textarea, useColorModeValue } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
 
-const Notepad = () => {
-  const [content, setContent] = useState("");
-
+const Notepad = ({ text, setText, isReadOnly }) => {
   const bg = useColorModeValue("gray.100", "gray.900");
   const color = useColorModeValue("black", "white");
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -11,17 +8,8 @@ const Notepad = () => {
   const btnColor = useColorModeValue("white", "black");
   const btnHoverBg = useColorModeValue("gray.800", "gray.300");
 
-  useEffect(() => {
-    const saved = localStorage.getItem("windows-notepad");
-    if (saved) setContent(saved);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("windows-notepad", content);
-  }, [content]);
-
   const handleDownload = () => {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "notes.txt";
@@ -52,8 +40,8 @@ const Notepad = () => {
 
       <Box flex="1">
         <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           placeholder="Start typing here..."
           resize="none"
           minH="100vh"
@@ -62,6 +50,7 @@ const Notepad = () => {
           bg={bg}
           color={color}
           borderColor={borderColor}
+          isReadOnly={isReadOnly}
           _focus={{
             borderColor: "blue.500",
             boxShadow: "0 0 0 1px #3182ce",
