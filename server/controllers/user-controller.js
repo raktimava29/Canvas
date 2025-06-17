@@ -108,4 +108,17 @@ const allUsers = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
-module.exports = { registerUser, loginUser, googleSignup, googleLogin, allUsers};
+// @desc    Get user by ID
+// @route   GET /api/user/:id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select("-password");
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.json(user);
+});
+
+module.exports = { registerUser, loginUser, googleSignup, googleLogin, allUsers, getUserById};

@@ -17,6 +17,7 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -24,6 +25,7 @@ const SideDrawer = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const navigateTo = useNavigate();
 
   const handleSearch = async () => {
     if (!search) {
@@ -104,7 +106,8 @@ const SideDrawer = () => {
                     bg={bgColor}
                     _hover={{ bg: hoverColor, cursor: 'pointer' }}
                     onClick={() => {
-                      console.log('Selected user:', user.name);
+                      console.log('Selected user:', user);
+                      navigateTo(`/${user._id}`);
                       onClose();
                     }}
                   >

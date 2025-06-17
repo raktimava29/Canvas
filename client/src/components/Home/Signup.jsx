@@ -17,7 +17,7 @@ import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SunIcon, MoonIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import ColorModeButton from "../Misc/ColorToggle";
 
@@ -90,46 +90,58 @@ const Signup = () => {
     },
   });
 
+  const handleSubmit = async () => {
+    if (!username || !email || !password) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill out all required fields.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
-const handleSubmit = async () => {
-  if (!username || !email || !password) {
-    toast({
-      title: "Missing fields",
-      description: "Please fill out all required fields.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+    try {
+      await axios.post('/api/user', {
+        name: username,
+        email,
+        password,
+      });
 
-  try {
-    await axios.post('/api/user', {
-      name: username,
-      email,
-      password,
-    });
+      toast({
+        title: "Account created successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
 
-    toast({
-      title: "Account created successfully!",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+      navigateTo("/");
+    } catch (err) {
+      console.error("Signup Error:", err?.response?.data || err.message);
 
-    navigateTo("/");
-  } catch (err) {
-    console.error("Signup Error:", err?.response?.data || err.message);
+      toast({
+        title: "Signup failed",
+        description: err?.response?.data?.message || "Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
-    toast({
-      title: "Signup failed",
-      description: err?.response?.data?.message || "Please try again.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo) {
+      toast({
+        title: "You're already logged in.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigateTo("/");
+    }
+  }, []);
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh">

@@ -15,10 +15,9 @@ const saveContent = asyncHandler(async (req, res) => {
   );
 
   if (!videoUrl || !videoUrl.trim()) {
-    res.status(400);
-    throw new Error('Video URL is required');
-  }
-
+  res.status(400);
+  throw new Error('Video URL is required');
+}
   res.json(content);
 });
 

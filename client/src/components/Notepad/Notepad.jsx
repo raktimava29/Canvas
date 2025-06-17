@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text, Textarea, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text, Textarea, useColorModeValue } from "@chakra-ui/react";
 
 const Notepad = ({ text, setText, isReadOnly }) => {
   const bg = useColorModeValue("gray.100", "gray.900");
@@ -20,9 +20,9 @@ const Notepad = ({ text, setText, isReadOnly }) => {
   return (
     <Flex direction="column" p={4} bg={bg} color={color}>
       <Flex justify="space-between" align="center" mb={4}>
-        <Text fontSize="xl" fontWeight="bold" className="font-openSans">
+        <Heading fontSize='2xl' fontWeight="bold" className="font-openSans">
           📝 Notepad
-        </Text>
+        </Heading>
         <Button
           onClick={handleDownload}
           bg={btnBg}

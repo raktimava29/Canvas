@@ -17,7 +17,7 @@ import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SunIcon, MoonIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import ColorModeButton from "../Misc/ColorToggle";
 
@@ -131,6 +131,20 @@ const Login = () => {
       }
     }
   };
+
+  useEffect(() => {
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  if (userInfo) {
+    toast({
+      title: "You're already logged in.",
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    navigateTo("/");
+  }
+}, []);
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh">

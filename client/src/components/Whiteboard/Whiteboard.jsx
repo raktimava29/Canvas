@@ -1,5 +1,11 @@
-import { Box, Button, Flex, useColorModeValue } from "@chakra-ui/react";
-import { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import { Box, Button, Flex, Heading, useColorModeValue } from "@chakra-ui/react";
+import {
+  useRef,
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import MySlider from "./Slider";
 import MyPicker from "./Color";
 
@@ -11,50 +17,46 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const Whiteboard = forwardRef((props, ref) => {
+const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   const canvasRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const ctxRef = useRef(null);
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
-
   const defaultStroke = useColorModeValue("#000000", "#ffffff");
   const prevDefaultStroke = usePrevious(defaultStroke);
   const [strokeColor, setStrokeColor] = useState(defaultStroke);
 
   const [history, setHistory] = useState([]);
   const [redoHistory, setRedoHistory] = useState([]);
-
   const maxHistoryLength = 20;
 
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue("black", "white");
 
   useImperativeHandle(ref, () => ({
-  exportCanvasAsImage: () => {
-    const canvas = canvasRef.current;
-    return canvas.toDataURL("image/png");
-  },
-  loadCanvasFromImage: (dataURL) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-    };
-    img.src = dataURL;
-  }
-}));
-
+    exportCanvasAsImage: () => {
+      const canvas = canvasRef.current;
+      return canvas.toDataURL("image/png");
+    },
+    loadCanvasFromImage: (dataURL) => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = dataURL;
+    },
+  }));
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = scrollContainerRef.current;
     const width = container.clientWidth;
     const hugeHeight = 20000;
-
     canvas.width = width;
     canvas.height = hugeHeight;
 
@@ -90,6 +92,7 @@ const Whiteboard = forwardRef((props, ref) => {
   };
 
   const startDrawing = ({ nativeEvent }) => {
+    if (isReadOnly) return;
     const { x, y } = getCanvasCoords(nativeEvent);
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(x, y);
@@ -97,14 +100,14 @@ const Whiteboard = forwardRef((props, ref) => {
   };
 
   const draw = ({ nativeEvent }) => {
-    if (!isDrawing) return;
+    if (!isDrawing || isReadOnly) return;
     const { x, y } = getCanvasCoords(nativeEvent);
     ctxRef.current.lineTo(x, y);
     ctxRef.current.stroke();
   };
 
   const endDrawing = () => {
-    if (!isDrawing) return;
+    if (!isDrawing || isReadOnly) return;
     ctxRef.current.closePath();
     setIsDrawing(false);
 
@@ -190,22 +193,24 @@ const Whiteboard = forwardRef((props, ref) => {
 
   return (
     <Flex direction="column" flex="1">
-      <Flex justify="space-between" align="center" py={2} px={4}>
-        <Flex gap={2}>
-          <Button colorScheme="red" onClick={clearCanvas}>
-            Clear
-          </Button>
-          <Button colorScheme="blue" onClick={undo}>
-            Undo
-          </Button>
-          <Button colorScheme="green" onClick={redo}>
-            Redo
-          </Button>
-        </Flex>
-
-        <MySlider value={lineWidth} onChange={setLineWidth} />
-        <MyPicker value={strokeColor} onExchange={setStrokeColor} />
+      <Flex justify="space-between" align="center" py={2} px={4} minH="56px">
+  {!isReadOnly ? (
+    <>
+      <Flex gap={2}>
+        <Button colorScheme="red" onClick={clearCanvas}>Clear</Button>
+        <Button colorScheme="blue" onClick={undo}>Undo</Button>
+        <Button colorScheme="green" onClick={redo}>Redo</Button>
       </Flex>
+      <MySlider value={lineWidth} onChange={setLineWidth} />
+      <MyPicker value={strokeColor} onExchange={setStrokeColor} />
+    </>
+  ) : (
+    <>
+      <Heading fontWeight="bold" className="font-openSans">Whiteboard</Heading>
+      <Box className="mt-14" />
+    </>
+  )}
+</Flex>
 
       <Box
         ref={scrollContainerRef}
@@ -221,7 +226,10 @@ const Whiteboard = forwardRef((props, ref) => {
           onMouseUp={endDrawing}
           onMouseLeave={endDrawing}
           className="cursor-crosshair block w-full"
-          style={{ borderColor }}
+          style={{
+            borderColor,
+            pointerEvents: isReadOnly ? "none" : "auto",
+          }}
         />
       </Box>
     </Flex>

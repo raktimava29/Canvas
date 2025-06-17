@@ -277,11 +277,44 @@ var allUsers = asyncHandler(function _callee5(req, res) {
       }
     }
   });
+}); // @desc    Get user by ID
+// @route   GET /api/user/:id
+
+var getUserById = asyncHandler(function _callee6(req, res) {
+  var user;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.next = 2;
+          return regeneratorRuntime.awrap(User.findById(req.params.id).select("-password"));
+
+        case 2:
+          user = _context6.sent;
+
+          if (user) {
+            _context6.next = 6;
+            break;
+          }
+
+          res.status(404);
+          throw new Error("User not found");
+
+        case 6:
+          res.json(user);
+
+        case 7:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
 });
 module.exports = {
   registerUser: registerUser,
   loginUser: loginUser,
   googleSignup: googleSignup,
   googleLogin: googleLogin,
-  allUsers: allUsers
+  allUsers: allUsers,
+  getUserById: getUserById
 };
