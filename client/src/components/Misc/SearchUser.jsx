@@ -45,7 +45,7 @@ const SearchUser = () => {
     console.log(id);
     console.log('Fetching content for URL:', url);
     try {
-      const res = await axios.get('/api/content', {
+      const res = await axios.get('/api/content/shared', {
         params: {
             videoUrl: url,
             userId: id, 

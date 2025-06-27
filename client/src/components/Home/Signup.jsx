@@ -116,7 +116,7 @@ const Signup = () => {
         isClosable: true,
       });
 
-      navigateTo("/");
+      navigateTo("/login");
     } catch (err) {
       console.error("Signup Error:", err?.response?.data || err.message);
 
