@@ -128,13 +128,10 @@ const Home = () => {
       <Flex justify="space-between" mx={4} align="center">
         <SideDrawer />
         <UserProfileModal />
-        <Box w="40px" />
-        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1">
-          Study Buddy
+        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1" marginLeft="-100" >
+          MindTube
         </Text>
-        <Box w="40px">
-          <ColorModeButton />
-        </Box>
+        <ColorModeButton />
       </Flex>
 
       <Box p={4} mb={4}>
@@ -148,7 +145,13 @@ const Home = () => {
             color={textColor}
             mb={4}
           />
-          <Button onClick={() => saveNotepad(notepadText)}>Save</Button>
+          <Button 
+            borderWidth="2px"
+            borderColor={borderColor}
+            onClick={() => saveNotepad(notepadText)}
+            >
+            Save
+          </Button>
         </Flex>
 
         {videoUrl && isYouTube && (
