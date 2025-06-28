@@ -62,14 +62,11 @@ NODE_ENV=production
 ## 📸 Screenshots
 
 ### 🧑‍🏫 Profile 
-
 ![](./client/src/assets/two.png)
 
 ### 📝 Editable Content
-
 ![](./client/src/assets/one.png)
 
 ### 🧾View Only
-
 ![](./client/src/assets/three.png)
 ![](./client/src/assets/four.png)
