@@ -63,7 +63,7 @@ NODE_ENV=production
 
 ### 🧑‍🏫 Profile 
 
-![](./client/src/assets/one.png)
+![](./client/src/assets/three.png)
 
 ### 📝 Editable Content
 
@@ -71,4 +71,4 @@ NODE_ENV=production
 
 ### 🧾View Only
 
-![](./client/src/assets/three.png)
+![](./client/src/assets/one.png)
