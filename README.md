@@ -42,7 +42,7 @@ OAuth login, real-time tools, and role-based access control.
 ## 🚀 Getting Started
 
 ### Clone the repo
-bash
+```bash
 git clone https://github.com/raktimava29/Canvas.git
 cd server
 npm install
