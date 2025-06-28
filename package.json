@@ -2,13 +2,13 @@
   "name": "study-buddy",
   "version": "1.0.0",
   "description": "Your ever present online classmate.",
-  "author": "Raktimava Bhattacharyya",
   "license": "ISC",
-  "type": "module",
+  "author": "Raktimava Bhattacharyya",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm install --prefix client && npm run build --prefix client",
-    "start": "node index.js"
+    "start": "node server/index.js",
+    "build": "npm install --legacy-peer-deps --production=false && npm install --legacy-peer-deps --prefix client --production=false && npm run build --prefix client"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -17,6 +17,7 @@
     "express": "^5.1.0",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.15.0"
+    "mongoose": "^8.15.0",
+    "nodemon": "^3.1.10"
   }
 }
