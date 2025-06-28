@@ -42,14 +42,20 @@ OAuth login, real-time tools, and role-based access control.
 ## 🚀 Getting Started
 
 ### Clone the repo
-
-\`\`\`bash git clone https://github.com/raktimava29/Canvas.git cd server
-npm install npm start cd client npm install npm run dev
-
+bash
+git clone https://github.com/raktimava29/Canvas.git
+cd server
+npm install
+npm start
+cd client
+npm install
+npm run dev
+ 
 ## ENV FIle
-
-MONGO_URI=your_mongodb_connection_string JWT_SECRET=your_jwt_secret
-GOOGLE_CLIENT_ID=your_google_oauth_client_id NODE_ENV=production
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+NODE_ENV=production
 
 ------------------------------------------------------------------------
 
