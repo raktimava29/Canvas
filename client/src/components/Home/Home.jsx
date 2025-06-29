@@ -128,7 +128,7 @@ const Home = () => {
       <Flex justify="space-between" mx={4} align="center">
         <SideDrawer />
         <UserProfileModal />
-        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1" marginLeft="-100" >
+        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1" marginLeft="-100" className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent">
           MindTube
         </Text>
         <ColorModeButton />

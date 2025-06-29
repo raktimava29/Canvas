@@ -145,14 +145,20 @@ const Signup = () => {
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh">
-      <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
+    <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
+      <Text
+          fontSize="3xl"
+          fontWeight="bold"
+          textAlign="center"
+          className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent"
+        >
+          MindTube
+        </Text>
+      <Flex flex="1" justify="center" align="center" gap={4}>
+        <img src={logo} alt="logo" />
+      </Flex>
         <Box w="40px" />
-        <Center flex="1">
-          <img src={logo} alt="logo" />
-        </Center>
-        <Box w="40px" textAlign="right">
           <ColorModeButton />
-        </Box>
       </Flex>
 
       <Box height="83.5vh" position="relative">
@@ -167,7 +173,7 @@ const Signup = () => {
             w="460px"
             maxW="90vw"
           >
-            <Center fontSize="xl" fontWeight="semibold" py={6}>
+            <Center color={useColorModeValue("blue.800", "whiteAlpha.900")} fontSize="xl" fontWeight="semibold" py={6}>
               Create a New Account
             </Center>
 
