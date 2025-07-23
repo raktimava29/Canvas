@@ -7,7 +7,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
@@ -24,24 +24,18 @@ const Home = () => {
   const [error, setError] = useState(null);
 
   const whiteboardRef = useRef();
-  const user = JSON.parse(localStorage.getItem('userInfo'));
+  const user = useMemo(() => JSON.parse(localStorage.getItem('userInfo')), []);
 
   const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
-  const saveNotepad = async (note) => {
+  const saveNotepad = useCallback(async (note) => {
     try {
       const canvasImage = whiteboardRef.current?.exportCanvasAsImage();
-      console.log('Saving note & canvas:', { note, canvasImage });
-
       const res = await axios.post(
         '/api/content/save',
-        {
-          videoUrl: inputUrl,
-          notepadText: note,
-          canvasImage,
-        },
+        { videoUrl: inputUrl, notepadText: note, canvasImage },
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -49,26 +43,20 @@ const Home = () => {
           },
         }
       );
-
       console.log('Saved successfully:', res.data);
     } catch (err) {
       console.error('Save failed:', err);
     }
-  };
+  }, [inputUrl, user]);
 
-  const fetchContent = async (url) => {
-    console.log('Fetching content for URL:', url);
+  const fetchContent = useCallback(async (url) => {
     try {
       const res = await axios.get('/api/content', {
         params: { videoUrl: url },
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
+        headers: { Authorization: `Bearer ${user?.token}` },
       });
 
       const data = res.data;
-      console.log('Content fetched:', data);
-
       setNotepadText(data.notepadText || '');
       setIsReadOnly(data.user !== user?._id);
 
@@ -80,21 +68,19 @@ const Home = () => {
       setNotepadText('');
       setIsReadOnly(false);
     }
-  };
+  }, [user]);
 
-  const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
+  const processUrl = useCallback(() => {
     setError(null);
-
     try {
       const url = new URL(inputUrl);
-      const hostname = url.hostname;
       let videoId = '';
       let originalUrl = inputUrl;
       let isYT = false;
 
-      if (hostname.includes('youtube.com') || hostname === 'youtu.be') {
-        if (hostname === 'youtu.be') {
+      if (url.hostname.includes('youtube.com') || url.hostname === 'youtu.be') {
+        isYT = true;
+        if (url.hostname === 'youtu.be') {
           videoId = url.pathname.slice(1);
         } else if (url.pathname.startsWith('/shorts/')) {
           videoId = url.pathname.split('/shorts/')[1];
@@ -105,9 +91,9 @@ const Home = () => {
         if (!videoId) throw new Error('Invalid YouTube URL');
         originalUrl = `https://www.youtube.com/watch?v=${videoId}`;
         setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
-        isYT = true;
       } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
         setVideoUrl(inputUrl);
+        isYT = false;
       } else {
         throw new Error('Unsupported video format or platform');
       }
@@ -121,6 +107,10 @@ const Home = () => {
       setIsYouTube(false);
       setError('❌ Invalid or unsupported video link.');
     }
+  }, [inputUrl, fetchContent]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') processUrl();
   };
 
   return (
@@ -128,14 +118,21 @@ const Home = () => {
       <Flex justify="space-between" mx={4} align="center">
         <SideDrawer />
         <UserProfileModal />
-        <Text fontSize="3xl" fontWeight="bold" textAlign="center" flex="1" marginLeft="-100" className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent">
+        <Text
+          fontSize="3xl"
+          fontWeight="bold"
+          textAlign="center"
+          flex="1"
+          marginLeft="-100"
+          className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent"
+        >
           MindTube
         </Text>
         <ColorModeButton />
       </Flex>
 
       <Box p={4} mb={4}>
-        <Flex gap={4}>
+       <Flex gap={4}>
           <Input
             placeholder="Paste video URL and press Enter"
             value={inputUrl}
@@ -154,41 +151,39 @@ const Home = () => {
           </Button>
         </Flex>
 
-        {videoUrl && isYouTube && (
+        {videoUrl && (
           <Center>
-            <iframe
-              src={videoUrl}
-              className="w-[70vw] h-[70vh]"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title="YouTube Player"
-            />
-          </Center>
-        )}
-
-        {videoUrl && !isYouTube && (
-          <Center>
-            <video
-              src={videoUrl}
-              controls
-              onError={() => setError('❌ Could not load the video.')}
-              style={{ maxWidth: '70vw', maxHeight: '70vh' }}
-            />
+            {isYouTube ? (
+              <iframe
+                src={videoUrl}
+                className="w-[70vw] h-[70vh]"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="YouTube Player"
+              />
+            ) : (
+              <video
+                src={videoUrl}
+                controls
+                onError={() => setError('❌ Could not load the video.')}
+                style={{ maxWidth: '70vw', maxHeight: '70vh' }}
+              />
+            )}
           </Center>
         )}
 
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <Flex>
-        <Box width="49%">
+      <Flex gap={2} flexWrap="wrap">
+        <Box flex="1" minW="300px">
           <Notepad
             text={notepadText}
             setText={setNotepadText}
             isReadOnly={isReadOnly}
           />
         </Box>
-        <Box width="50%">
+        <Box flex="1" minW="300px">
           <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
         </Box>
       </Flex>

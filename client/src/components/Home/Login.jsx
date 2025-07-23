@@ -12,28 +12,26 @@ import {
   useToast,
   InputRightElement,
 } from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { SunIcon, MoonIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import ColorModeButton from "../Misc/ColorToggle";
 
 const Login = () => {
-  const navigateTo = useNavigate();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword,setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
-  const bgGradient = useColorModeValue(
-    "linear(to-br, gray.50, gray.100)",
-    "linear(to-br, gray.900, gray.800)"
-  );
-
+  // ColorMode values
+  const bgGradient = useColorModeValue("linear(to-br, gray.50, gray.100)", "linear(to-br, gray.900, gray.800)");
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const textColor = useColorModeValue("gray.800", "whiteAlpha.900");
   const subTextColor = useColorModeValue("gray.600", "gray.400");
@@ -42,114 +40,114 @@ const Login = () => {
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
 
-  const googleLogin = useGoogleLogin({
-  onSuccess: async (tokenResponse) => {
-    try {
-      const { data: googleData } = await axios.get(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        }
-      );
-      
-      const { data: userData } = await axios.post('/api/user/google-login', {
-        email: googleData.email,
-        googleId: googleData.sub,
-      });
-      localStorage.setItem("userInfo", JSON.stringify(userData));
+  // ✅ Redirect if already logged in
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo) {
       toast({
-        title: "Logged in with Google!",
-        status: "success",
+        title: "You're already logged in.",
+        status: "info",
         duration: 3000,
         isClosable: true,
       });
+      navigate("/");
+    }
+  }, []);
 
-      navigateTo("/");
-    } catch (error) {
-      console.error("Google login failed:", error?.response?.data || error.message);
+  // ✅ Google OAuth Login
+  const googleLogin = useGoogleLogin({
+    onSuccess: async ({ access_token }) => {
+      try {
+        const { data: googleData } = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
 
+        const { data: userData } = await axios.post("/api/user/google-login", {
+          email: googleData.email,
+          googleId: googleData.sub,
+        });
+
+        localStorage.setItem("userInfo", JSON.stringify(userData));
+
+        toast({
+          title: "Logged in with Google!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        navigate("/");
+      } catch (error) {
+        toast({
+          title: "Google login failed.",
+          description: error?.response?.data?.message || "Something went wrong.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    },
+    onError: () => {
       toast({
-        title: "Google login failed.",
-        description: error?.response?.data?.message || "Something went wrong.",
+        title: "Google authentication was cancelled or failed.",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-    }
-  },
-  onError: () => {
-    toast({
-      title: "Google authentication was cancelled or failed.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  },
-});
+    },
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // ✅ Form Login
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    if (!email || !password) {
-      toast({
-        title: 'Missing fields',
-        description: 'Please fill out all fields.',
-        status: 'error',
-        duration: 4000,
-        isClosable: true,
-      });
-    } else {
+      if (!email || !password) {
+        toast({
+          title: "Missing fields",
+          description: "Please fill out all fields.",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+
       try {
-        const config = {
-          headers: {
-            'Content-type': 'application/json',
-          },
-        };
+        const { data } = await axios.post(
+          "/api/user/login",
+          { email, password },
+          { headers: { "Content-type": "application/json" } }
+        );
 
-        const { data } = await axios.post('/api/user/login', { email, password }, config);
+        localStorage.setItem("userInfo", JSON.stringify(data));
 
         toast({
-          title: 'Login Successful',
-          status: 'success',
+          title: "Login Successful",
+          status: "success",
           duration: 5000,
           isClosable: true,
-          position: 'bottom',
         });
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        navigateTo('/');
+
+        navigate("/");
       } catch (error) {
         toast({
-          title: 'Error Occurred!',
-          description: error.response.data.message,
-          status: 'error',
+          title: "Login Failed",
+          description: error.response?.data?.message || "Something went wrong.",
+          status: "error",
           duration: 5000,
           isClosable: true,
-          position: 'bottom',
         });
       }
-    }
-  };
-
-  useEffect(() => {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  if (userInfo) {
-    toast({
-      title: "You're already logged in.",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
-    });
-
-    navigateTo("/");
-  }
-}, []);
+    },
+    [email, password, toast, navigate]
+  );
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh">
+      {/* Header */}
       <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
-      <Text
+        <Text
           fontSize="3xl"
           fontWeight="bold"
           textAlign="center"
@@ -157,13 +155,14 @@ const Login = () => {
         >
           MindTube
         </Text>
-      <Flex flex="1" justify="center" align="center" gap={4}>
-        <img src={logo} alt="logo" />
-      </Flex>
+        <Flex flex="1" justify="center">
+          <img src={logo} alt="logo" />
+        </Flex>
         <Box w="40px" />
-          <ColorModeButton />
+        <ColorModeButton />
       </Flex>
 
+      {/* Login Form */}
       <Box height="83.5vh" position="relative">
         <AbsoluteCenter>
           <Box
@@ -176,10 +175,11 @@ const Login = () => {
             w="460px"
             maxW="90vw"
           >
-            <Center color={useColorModeValue("blue.800", "whiteAlpha.900")} fontSize="xl" fontWeight="semibold" py={6}>
+            <Center fontSize="xl" fontWeight="semibold" py={6} color={useColorModeValue("blue.800", "whiteAlpha.900")}>
               Login to Your Account
             </Center>
 
+            {/* Google Login */}
             <Flex
               align="center"
               justify="center"
@@ -203,34 +203,37 @@ const Login = () => {
               OR
             </Center>
 
+            {/* Email Input */}
             <InputGroup mb={4}>
               <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your Email"
-                variant="filled"
                 type="email"
+                variant="filled"
               />
             </InputGroup>
 
-            <InputGroup mb={4} >
-                <Input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  variant="filled"
+            {/* Password Input */}
+            <InputGroup mb={4}>
+              <Input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your Password"
+                variant="filled"
+              />
+              <InputRightElement>
+                <IconButton
+                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle Password"
+                  variant="link"
                 />
-                <InputRightElement>
-                  <IconButton
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                    onClick={() => setShowPassword(!showPassword)}
-                    variant="link"
-                  />
-                </InputRightElement>
-              </InputGroup>
+              </InputRightElement>
+            </InputGroup>
 
+            {/* Login Button */}
             <Button
               w="full"
               py={5}
@@ -244,6 +247,7 @@ const Login = () => {
               Welcome Back
             </Button>
 
+            {/* Sign Up Redirect */}
             <Text mt={4} fontSize="md" color={subTextColor} textAlign="center">
               Don’t have an account?{" "}
               <Text
@@ -251,7 +255,7 @@ const Login = () => {
                 color={linkColor}
                 cursor="pointer"
                 fontWeight="medium"
-                onClick={() => navigateTo("/signup")}
+                onClick={() => navigate("/signup")}
               >
                 Sign Up
               </Text>
@@ -260,6 +264,7 @@ const Login = () => {
         </AbsoluteCenter>
       </Box>
 
+      {/* Footer */}
       <Center bg={footerBg} py={2}>
         <Text fontSize="xs" color={footerColor}>
           © 2025 Year. All rights reserved.
