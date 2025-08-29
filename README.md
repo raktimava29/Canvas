@@ -5,7 +5,7 @@ users take notes, draw on a whiteboard, and store content tied to
 specific video URLs --- all in one place. It features secure Google
 OAuth login, real-time tools, and role-based access control.
 
-> 🚀 Deployed at: <https://mindtube.onrender.com>
+> 🚀 Deployed at: <https://mindtube-pied.vercel.app/>
 
 ------------------------------------------------------------------------
 
@@ -34,7 +34,8 @@ OAuth login, real-time tools, and role-based access control.
 -   🔑 Google OAuth login & JWT session management
 -   📝 Notepad and 🧾 whiteboard tools per video
 -   🔒 Role-based access: only owners can edit their content
--   📦 Deployed as a single web service on [Render](https://render.com)
+-   📦 Backend Server is Deployed as a single web service on [Render](https://render.com)
+-   📦 Frontend Client part is Deployed as a project on [Vercel](https://vercel.com/) 
 -   🌐 Fully responsive Chakra UI design with theme switching
 
 ------------------------------------------------------------------------
