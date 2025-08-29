@@ -28,10 +28,12 @@ const SearchUser = () => {
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
   const fetchUserName = async () => {
     try {
-      const { data } = await axios.get(`/api/user/${id}`); 
+      const { data } = await axios.get(`${API_URL}/api/user/${id}`); 
       setUserName(data.name);
     } catch (err) {
       console.error('Failed to fetch user name:', err);
@@ -45,7 +47,7 @@ const SearchUser = () => {
     console.log(id);
     console.log('Fetching content for URL:', url);
     try {
-      const res = await axios.get('/api/content/shared', {
+      const res = await axios.get(`${API_URL}/api/content/shared`, {
         params: {
             videoUrl: url,
             userId: id, 

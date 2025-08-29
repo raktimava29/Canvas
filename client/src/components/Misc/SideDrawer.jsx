@@ -27,6 +27,8 @@ const SideDrawer = () => {
   const toast = useToast();
   const navigateTo = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleSearch = async () => {
     if (!search) {
       toast({
@@ -47,7 +49,7 @@ const SideDrawer = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`${API_URL}/api/user?search=${search}`, config);
       setSearchResult(data);
     } catch (error) {
       toast({
