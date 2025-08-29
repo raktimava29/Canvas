@@ -17,10 +17,11 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import ColorModeButton from "../Misc/ColorToggle";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,7 +31,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // ColorMode values
   const bgGradient = useColorModeValue("linear(to-br, gray.50, gray.100)", "linear(to-br, gray.900, gray.800)");
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const textColor = useColorModeValue("gray.800", "whiteAlpha.900");
@@ -40,7 +40,6 @@ const Login = () => {
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
 
-  // ✅ Redirect if already logged in
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo) {
@@ -50,11 +49,10 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/");
+      navigate("/home");
     }
   }, []);
 
-  // ✅ Google OAuth Login
   const googleLogin = useGoogleLogin({
     onSuccess: async ({ access_token }) => {
       try {
@@ -62,7 +60,7 @@ const Login = () => {
           headers: { Authorization: `Bearer ${access_token}` },
         });
 
-        const { data: userData } = await axios.post("/api/user/google-login", {
+        const { data: userData } = await axios.post(`${API_URL}/api/user/google-login`, {
           email: googleData.email,
           googleId: googleData.sub,
         });
@@ -76,7 +74,7 @@ const Login = () => {
           isClosable: true,
         });
 
-        navigate("/");
+        navigate("/home");
       } catch (error) {
         toast({
           title: "Google login failed.",
@@ -97,7 +95,6 @@ const Login = () => {
     },
   });
 
-  // ✅ Form Login
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -115,7 +112,7 @@ const Login = () => {
 
       try {
         const { data } = await axios.post(
-          "/api/user/login",
+          `${API_URL}/api/user/login`,
           { email, password },
           { headers: { "Content-type": "application/json" } }
         );
@@ -129,7 +126,7 @@ const Login = () => {
           isClosable: true,
         });
 
-        navigate("/");
+        navigate("/home");
       } catch (error) {
         toast({
           title: "Login Failed",
@@ -145,7 +142,6 @@ const Login = () => {
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh">
-      {/* Header */}
       <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
         <Text
           fontSize="3xl"
@@ -162,7 +158,6 @@ const Login = () => {
         <ColorModeButton />
       </Flex>
 
-      {/* Login Form */}
       <Box height="83.5vh" position="relative">
         <AbsoluteCenter>
           <Box
@@ -179,7 +174,6 @@ const Login = () => {
               Login to Your Account
             </Center>
 
-            {/* Google Login */}
             <Flex
               align="center"
               justify="center"
@@ -203,7 +197,6 @@ const Login = () => {
               OR
             </Center>
 
-            {/* Email Input */}
             <InputGroup mb={4}>
               <Input
                 value={email}
@@ -214,7 +207,6 @@ const Login = () => {
               />
             </InputGroup>
 
-            {/* Password Input */}
             <InputGroup mb={4}>
               <Input
                 value={password}
@@ -233,7 +225,6 @@ const Login = () => {
               </InputRightElement>
             </InputGroup>
 
-            {/* Login Button */}
             <Button
               w="full"
               py={5}
@@ -247,7 +238,6 @@ const Login = () => {
               Welcome Back
             </Button>
 
-            {/* Sign Up Redirect */}
             <Text mt={4} fontSize="md" color={subTextColor} textAlign="center">
               Don’t have an account?{" "}
               <Text
@@ -264,7 +254,6 @@ const Login = () => {
         </AbsoluteCenter>
       </Box>
 
-      {/* Footer */}
       <Center bg={footerBg} py={2}>
         <Text fontSize="xs" color={footerColor}>
           © 2025 Year. All rights reserved.

@@ -41,6 +41,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+console.log(__dirname1);
 app.use(notFound);
 app.use(errorHandler);
 var PORT = process.env.PORT || 5000;

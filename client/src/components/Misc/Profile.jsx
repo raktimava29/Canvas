@@ -33,7 +33,7 @@ const UserProfile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
-    navigateTo("/login");
+    navigateTo("/");
   };
 
   const name = user?.name || "User";

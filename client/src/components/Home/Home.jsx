@@ -30,45 +30,47 @@ const Home = () => {
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  
   const saveNotepad = useCallback(async (note) => {
-    try {
-      const canvasImage = whiteboardRef.current?.exportCanvasAsImage();
-      const res = await axios.post(
-        '/api/content/save',
-        { videoUrl: inputUrl, notepadText: note, canvasImage },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            'Content-type': 'application/json',
-          },
-        }
-      );
-      console.log('Saved successfully:', res.data);
-    } catch (err) {
-      console.error('Save failed:', err);
-    }
-  }, [inputUrl, user]);
-
-  const fetchContent = useCallback(async (url) => {
-    try {
-      const res = await axios.get('/api/content', {
-        params: { videoUrl: url },
-        headers: { Authorization: `Bearer ${user?.token}` },
-      });
-
-      const data = res.data;
-      setNotepadText(data.notepadText || '');
-      setIsReadOnly(data.user !== user?._id);
-
-      if (data.canvasImage && whiteboardRef.current?.loadCanvasFromImage) {
-        whiteboardRef.current.loadCanvasFromImage(data.canvasImage);
+  try {
+    const canvasImage = whiteboardRef.current?.exportCanvasAsImage();
+    const res = await axios.post(
+      `${API_URL}/api/content/save`,
+      { videoUrl: inputUrl, notepadText: note, canvasImage },
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          'Content-type': 'application/json',
+        },
       }
-    } catch (err) {
-      console.error('Fetch failed:', err.response?.data || err.message);
-      setNotepadText('');
-      setIsReadOnly(false);
+    );
+    console.log('Saved successfully:', res.data);
+  } catch (err) {
+    console.error('Save failed:', err.response?.data || err.message);
+  }
+}, [inputUrl, user]);
+
+const fetchContent = useCallback(async (url) => {
+  try {
+    const res = await axios.get(`${API_URL}/api/content`, {
+      params: { videoUrl: url },
+      headers: { Authorization: `Bearer ${user?.token}` },
+    });
+
+    const data = res.data;
+    setNotepadText(data.notepadText || '');
+    setIsReadOnly(data.user !== user?._id);
+
+    if (data.canvasImage && whiteboardRef.current?.loadCanvasFromImage) {
+      whiteboardRef.current.loadCanvasFromImage(data.canvasImage);
     }
-  }, [user]);
+  } catch (err) {
+    console.error('Fetch failed:', err.response?.data || err.message);
+    setNotepadText('');
+    setIsReadOnly(false);
+  }
+}, [user]);
 
   const processUrl = useCallback(() => {
     setError(null);

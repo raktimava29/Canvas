@@ -43,18 +43,23 @@ const Signup = () => {
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
   const googleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const { data } = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        });
+        const { data } = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        );
 
         const { name, email, sub: googleId } = data;
 
-        await axios.post('/api/user/google-signup', {
+        await axios.post(`${API_URL}/api/user/google-signup`, {
           username: name,
           email,
           googleId,
@@ -67,13 +72,14 @@ const Signup = () => {
           isClosable: true,
         });
 
-        navigateTo("/");
+        navigateTo("/home");
       } catch (error) {
         console.error("Google Signup Error:", error?.response?.data || error.message);
 
         toast({
           title: "Google sign up failed.",
-          description: error?.response?.data?.message || "Something went wrong.",
+          description:
+            error?.response?.data?.message || "Something went wrong.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -103,7 +109,7 @@ const Signup = () => {
     }
 
     try {
-      await axios.post('/api/user', {
+      await axios.post(`${API_URL}/api/user`, {
         name: username,
         email,
         password,
@@ -139,7 +145,7 @@ const Signup = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigateTo("/");
+      navigateTo("/home");
     }
   }, []);
 
@@ -256,7 +262,7 @@ const Signup = () => {
                 color={linkColor}
                 cursor="pointer"
                 fontWeight="medium"
-                onClick={() => navigateTo("/login")}
+                onClick={() => navigateTo("/")}
               >
                 Login
               </Text>
