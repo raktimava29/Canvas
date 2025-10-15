@@ -33,7 +33,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   const maxHistoryLength = 20;
 
   const bgColor = useColorModeValue("gray.100", "gray.900");
-  const borderColor = useColorModeValue("black", "white");
+  const borderColor = useColorModeValue("gray.400", "gray.600");
 
   useImperativeHandle(ref, () => ({
     exportCanvasAsImage: () => {

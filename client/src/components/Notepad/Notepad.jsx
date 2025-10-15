@@ -11,7 +11,7 @@ import { useCallback } from "react";
 const Notepad = ({ text, setText, isReadOnly }) => {
   const bg = useColorModeValue("gray.100", "gray.900");
   const color = useColorModeValue("black", "white");
-  const borderColor = useColorModeValue("gray.300", "gray.600");
+  const borderColor = useColorModeValue("gray.400", "gray.600");
   const btnBg = useColorModeValue("black", "white");
   const btnColor = useColorModeValue("white", "black");
   const btnHoverBg = useColorModeValue("gray.800", "gray.300");

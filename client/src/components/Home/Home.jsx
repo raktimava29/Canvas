@@ -177,15 +177,15 @@ const fetchContent = useCallback(async (url) => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <Flex gap={2} flexWrap="wrap">
-        <Box flex="1" minW="300px">
+      <Flex gap={2}>
+        <Box flex="0 0 35%">
           <Notepad
             text={notepadText}
             setText={setNotepadText}
             isReadOnly={isReadOnly}
           />
         </Box>
-        <Box flex="1" minW="300px">
+        <Box flex="0 0 63%">
           <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
         </Box>
       </Flex>
