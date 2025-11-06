@@ -3,15 +3,17 @@ import {
   Center,
   Flex,
   Heading,
+  IconButton,
   Input,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
 import ColorModeButton from '../Misc/ColorToggle';
+import { FaHome } from 'react-icons/fa';
 
 const SearchUser = () => {
   const { id } = useParams();
@@ -23,6 +25,7 @@ const SearchUser = () => {
   const [isYouTube, setIsYouTube] = useState(false);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
+  const navigateTo = useNavigate();
 
   const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
@@ -106,6 +109,20 @@ const SearchUser = () => {
   return (
     <Box bg={bg} color={textColor} py={4} className="font-openSans">
       <Flex justify="space-between" mx={4} align="center">
+      <IconButton
+        icon={<FaHome />}
+        onClick={() => navigateTo('/home')}
+        variant="ghost"
+        aria-label="Go Home"
+        marginLeft="10px"
+        borderWidth="2px"
+        borderColor={borderColor}
+        _hover={{
+        bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
+        transform: 'scale(1.05)',
+        transition: 'all 0.2s',
+      }}
+      />
         <Box w="40px" />
         <Heading className="font-openSans" textAlign="center" flex="1">
           Viewing {userName ? `${userName}’s` : 'User’s'} Shared Notes
@@ -115,7 +132,7 @@ const SearchUser = () => {
         </Box>
       </Flex>
 
-      <Box p={4} mb={4}>
+      <Box p={4} mb={-4}>
         <Flex gap={4}>
           <Input
             placeholder="Paste video URL and press Enter"
@@ -154,14 +171,14 @@ const SearchUser = () => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <Flex>
-        <Box width="49%">
+      <div class="flex flex-col md:flex-col lg:flex-row gap-2">
+        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
           <Notepad text={notepadText} setText={() => {}} isReadOnly={true} />
-        </Box>
-        <Box width="50%">
+        </div>
+        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
           <Whiteboard ref={whiteboardRef} isReadOnly={true} />
-        </Box>
-      </Flex>
+        </div>
+      </div>
     </Box>
   );
 };

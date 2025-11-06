@@ -192,7 +192,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   }, [defaultStroke, prevDefaultStroke]);
 
   return (
-    <Flex direction="column" flex="1">
+    <div class="flex flex-col flex-1 md:m-5 lg:m-0">
       <Flex justify="space-between" align="center" py={2} px={4} minH="56px">
   {!isReadOnly ? (
     <>
@@ -214,7 +214,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
 
       <Box
         ref={scrollContainerRef}
-        className="overflow-auto no-scrollbar rounded-md h-[99.7vh]"
+        className="overflow-auto no-scrollbar rounded-md lg:h-[79.7vh] md:h-[80vh]"
         borderWidth="1px"
         borderColor={borderColor}
         bg={bgColor}
@@ -232,7 +232,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
           }}
         />
       </Box>
-    </Flex>
+    </div>
   );
 });
 

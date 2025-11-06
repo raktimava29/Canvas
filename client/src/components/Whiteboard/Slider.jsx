@@ -1,4 +1,3 @@
-// MySlider.jsx
 import { Box, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Text } from "@chakra-ui/react";
 
 const MySlider = ({ value, onChange }) => {

@@ -50,6 +50,11 @@ const UserProfile = () => {
           aria-label="View Profile"
           borderWidth="2px"
           borderColor={borderColor}
+          _hover={{
+          bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
+          transform: 'scale(1.05)',
+          transition: 'all 0.2s',
+        }}
         />
       </Tooltip>
 
@@ -72,7 +77,7 @@ const UserProfile = () => {
             <Text>{email}</Text>
            {user ? 
             <Button mt={4} onClick={handleLogout} colorScheme="red">Logout</Button> :
-            <Button mt={4} onClick={() =>navigateTo('/login')} colorScheme="red">Login</Button>
+            <Button mt={4} onClick={() =>navigateTo('/')} colorScheme="red">Login</Button>
            }
           </ModalBody>
         </ModalContent>

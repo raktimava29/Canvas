@@ -79,6 +79,12 @@ const SideDrawer = () => {
         aria-label="Search Users"
         borderWidth="2px"
         borderColor={borderColor}
+        _hover={{
+        bg: useColorModeValue('blue.100', 'whiteAlpha.200'),
+        borderColor: useColorModeValue('blue.300', 'blue.200'),
+        transform: 'scale(1.05)',
+        transition: 'all 0.2s ease',
+      }}
       />
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />

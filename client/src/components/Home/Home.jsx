@@ -117,7 +117,7 @@ const fetchContent = useCallback(async (url) => {
 
   return (
     <Box bg={bg} color={textColor} py={4} className="font-openSans">
-      <Flex justify="space-between" mx={4} align="center">
+      <div class="flex justify-between items-center mx-4 md:min-w-[60px] lg:min-w-[80vw]">
         <SideDrawer />
         <UserProfileModal />
         <Text
@@ -131,9 +131,9 @@ const fetchContent = useCallback(async (url) => {
           MindTube
         </Text>
         <ColorModeButton />
-      </Flex>
+      </div>
 
-      <Box p={4} mb={4}>
+      <Box p={4} mb={-4}>
        <Flex gap={4}>
           <Input
             placeholder="Paste video URL and press Enter"
@@ -148,6 +148,12 @@ const fetchContent = useCallback(async (url) => {
             borderWidth="2px"
             borderColor={borderColor}
             onClick={() => saveNotepad(notepadText)}
+            bg={useColorModeValue('gray.100', 'blackgray.900')} 
+            _hover={{
+            bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
+            transform: 'scale(1.05)',
+            transition: 'all 0.2s ease',
+            }}
             >
             Save
           </Button>
@@ -177,18 +183,18 @@ const fetchContent = useCallback(async (url) => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <Flex gap={2}>
-        <Box flex="0 0 35%">
+      <div class="flex flex-col md:flex-col lg:flex-row gap-2">
+        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
           <Notepad
             text={notepadText}
             setText={setNotepadText}
             isReadOnly={isReadOnly}
           />
-        </Box>
-        <Box flex="0 0 63%">
+        </div>
+        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
           <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
-        </Box>
-      </Flex>
+        </div>
+      </div>
     </Box>
   );
 };

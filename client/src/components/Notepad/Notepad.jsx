@@ -51,9 +51,8 @@ const Notepad = ({ text, setText, isReadOnly }) => {
         onChange={(e) => setText(e.target.value)}
         placeholder="Start typing here..."
         resize="none"
-        minH="100vh"
+        minH={{lg:"80vh",md:"40vh"}}
         fontSize="md"
-        className="font-openSans"
         bg={bg}
         color={color}
         borderColor={borderColor}

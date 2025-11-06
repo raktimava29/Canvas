@@ -1,4 +1,3 @@
-// MyPicker.jsx
 import { Box, Text, Input } from "@chakra-ui/react";
 
 const MyPicker = ({ value, onExchange }) => {

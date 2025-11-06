@@ -10,8 +10,12 @@ export default {
   theme: {
     extend: {},
     fontFamily: {
-        openSans: ["Open Sans", 'sans-serif'],
-      },
+      openSans: ["Open Sans", "sans-serif"],
+    },
+    screens: {
+      md: "760px",
+      lg: "1070px"
+    },
   },
   plugins: [],
-}
+};
