@@ -1,5 +1,4 @@
 import {
-  AbsoluteCenter,
   Box,
   Button,
   Center,
@@ -150,7 +149,7 @@ const Signup = () => {
   }, []);
 
   return (
-    <Box bg={bgColor} color={textColor} minH="100vh">
+    <Box bg={bgColor} color={textColor} minH="100vh" display="flex" flexDirection="column">
     <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
       <Text
           fontSize="3xl"
@@ -167,8 +166,7 @@ const Signup = () => {
           <ColorModeButton />
       </Flex>
 
-      <Box height="83.5vh" position="relative">
-        <AbsoluteCenter>
+      <Box flex="1" position="relative" display="flex" alignItems="center" justifyContent="center">
           <Box
             bgGradient={bgGradient}
             border="1px solid"
@@ -189,6 +187,9 @@ const Signup = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
                 variant="filled"
+                transition="all 0.2s ease"
+                _hover={{ transform: "scale(1.02)" }}
+                _focus={{ transform: "scale(1.02)" }}
               />
             </InputGroup>
 
@@ -203,7 +204,7 @@ const Signup = () => {
               mb={4}
               cursor="pointer"
               onClick={googleSignup}
-              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
+              _hover={{ bg: useColorModeValue("gray.200", "gray.700"), transform: "scale(1.05)", transition: "all 0.2s ease" }}
             >
               <img src={google} alt="google" width="20px" style={{ marginRight: "10px" }} />
               <Text fontSize=" md" color={subTextColor}>
@@ -211,7 +212,7 @@ const Signup = () => {
               </Text>
             </Flex>
 
-            <Center fontSize="sm" my={2}>
+            <Center fontSize="sm" my={2} fontWeight={"bold"}>
               OR
             </Center>
 
@@ -221,6 +222,9 @@ const Signup = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Provide your Email"
                 variant="filled"
+                transition="all 0.2s ease"
+                _hover={{ transform: "scale(1.02)" }}
+                _focus={{ transform: "scale(1.02)" }}
               />
             </InputGroup>
 
@@ -231,6 +235,9 @@ const Signup = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   variant="filled"
+                  transition="all 0.2s ease"
+                  _hover={{ transform: "scale(1.02)" }}
+                  _focus={{ transform: "scale(1.02)" }}
                 />
                 <InputRightElement>
                   <IconButton
@@ -249,7 +256,8 @@ const Signup = () => {
               mt={2}
               bgGradient="linear(to-r, blue.600, blue.800)"
               color="white"
-              _hover={{ opacity: 0.9 }}
+              transition="all 0.2s ease"
+              _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
               onClick={handleSubmit}
             >
               Create an Account
@@ -262,13 +270,14 @@ const Signup = () => {
                 color={linkColor}
                 cursor="pointer"
                 fontWeight="medium"
+                transition="all 0.2s ease"
+                _hover={{ textDecoration: "underline" }}
                 onClick={() => navigateTo("/")}
               >
                 Login
               </Text>
             </Text>
           </Box>
-        </AbsoluteCenter>
       </Box>
 
       <Center bg={footerBg} py={2}>
