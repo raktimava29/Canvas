@@ -5,11 +5,14 @@ const Login = lazy(() => import('./components/Home/Login'));
 const Signup = lazy(() => import('./components/Home/Signup'));
 const SearchUser = lazy(() => import('./components/Misc/SearchUser'));
 
+import Test from "./components/Test"
+
 function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route path="/" element={<Login />} />
+        {/* <Route path="/content/:id" element={<Test />} /> */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
         <Route path="/:id" element={<SearchUser />} />
@@ -19,3 +22,11 @@ function App() {
 }
 
 export default App;
+
+// const App = () => {
+//   return (
+//     <Test/>
+//   )
+// }
+
+// export default App
