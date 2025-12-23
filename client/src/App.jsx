@@ -5,8 +5,6 @@ const Login = lazy(() => import('./components/Home/Login'));
 const Signup = lazy(() => import('./components/Home/Signup'));
 const SearchUser = lazy(() => import('./components/Misc/SearchUser'));
 
-import Test from "./components/Test"
-
 function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
