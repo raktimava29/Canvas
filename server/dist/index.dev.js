@@ -18,11 +18,6 @@ var _require = require('./misc/errors'),
 
 var path = require('path');
 
-var http = require('http');
-
-var _require2 = require('socket.io'),
-    Server = _require2.Server;
-
 dotenv.config();
 connectDB();
 var app = express();
@@ -50,29 +45,6 @@ console.log(__dirname1);
 app.use(notFound);
 app.use(errorHandler);
 var PORT = process.env.PORT || 5000;
-var server = http.createServer(app);
-var io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-io.on("connection", function (socket) {
-  console.log("User connected:", socket.id);
-  socket.on("note:update", function (_ref) {
-    var roomId = _ref.roomId,
-        content = _ref.content;
-    socket.to(roomId).emit("note:sync", {
-      content: content
-    });
-  });
-  socket.on("board:update", function (point) {
-    socket.broadcast.emit("board:sync", point);
-  });
-  socket.on("disconnect", function () {
-    console.log("User disconnected:", socket.id);
-  });
-});
-server.listen(PORT, function () {
+app.listen(PORT, function () {
   return console.log("Server Started on PORT ".concat(PORT));
 });
