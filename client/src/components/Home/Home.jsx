@@ -45,7 +45,6 @@ const Home = () => {
         },
       }
     );
-    console.log('Saved successfully:', res.data);
   } catch (err) {
     console.error('Save failed:', err.response?.data || err.message);
   }
