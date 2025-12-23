@@ -35,22 +35,55 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue("gray.400", "gray.600");
 
+  const detectInkColor = (imageData) => {
+  const data = imageData.data;
+  let white = 0;
+  let black = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    if (r === 255 && g === 255 && b === 255) white++;
+    else if (r === 0 && g === 0 && b === 0) black++;
+  }
+
+  return white > black ? "white" : "black";
+};
+
   useImperativeHandle(ref, () => ({
     exportCanvasAsImage: () => {
       const canvas = canvasRef.current;
       return canvas.toDataURL("image/png");
     },
+
     loadCanvasFromImage: (dataURL) => {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
       const img = new Image();
+
       img.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
+
+        const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const inkColor = detectInkColor(image);
+
+        const isCurrentlyDark = defaultStroke === "#ffffff";
+
+        if (
+          (inkColor === "white" && !isCurrentlyDark) ||
+          (inkColor === "black" && isCurrentlyDark)     
+        ) {
+          const inverted = invertBlackWhite(image);
+          ctx.putImageData(inverted, 0, 0);
+        }
       };
+
       img.src = dataURL;
     },
-  }));
+}));
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -228,7 +261,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
           className="cursor-crosshair block w-full"
           style={{
             borderColor,
-            pointerEvents: isReadOnly ? "none" : "auto",
+            pointerEvents: "auto"
           }}
         />
       </Box>
