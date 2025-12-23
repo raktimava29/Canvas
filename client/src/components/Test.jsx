@@ -5,20 +5,17 @@ import { useParams } from "react-router-dom";
 const socket = io("http://localhost:5000");
 
 export default function Test() {
-  const { id: roomId } = useParams(); // get /content/:id from URL
+  const { id: roomId } = useParams();
 
   const [text, setText] = useState("");
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Load logged-in user from localStorage (modify key if needed)
     const storedUser = JSON.parse(localStorage.getItem("userInfo"));
     setUser(storedUser);
 
-    // Join Socket Room
     socket.emit("join-room", roomId);
 
-    // Listen for incoming notes
     socket.on("note:sync", (data) => {
         setText(data.content);
       });
@@ -37,7 +34,6 @@ export default function Test() {
   return (
     <div style={{ padding: 20 }}>
       
-      {/* Logged-in User Section */}
       <div
         style={{
           marginBottom: 20,
@@ -54,7 +50,6 @@ export default function Test() {
         <small>Room: {roomId}</small>
       </div>
 
-      {/* Realtime Textarea */}
       <textarea
         value={text}
         onChange={handleChange}
