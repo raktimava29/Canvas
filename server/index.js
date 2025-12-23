@@ -6,6 +6,8 @@ const userRoutes = require('./routes/user-route');
 const contentRoutes = require('./routes/content-route');
 const { notFound, errorHandler } = require('./misc/errors');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 
 dotenv.config();
 
@@ -39,5 +41,30 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server Started on PORT ${PORT}`));
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("note:update", ({ roomId, content }) => {
+  socket.to(roomId).emit("note:sync", { content });
+});
+
+  socket.on("board:update", (point) => {
+    socket.broadcast.emit("board:sync", point);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+server.listen(PORT, () => console.log(`Server Started on PORT ${PORT}`));
 
