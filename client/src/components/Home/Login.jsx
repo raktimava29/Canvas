@@ -1,5 +1,4 @@
 import {
-  AbsoluteCenter,
   Box,
   Button,
   Center,
@@ -24,7 +23,7 @@ import ColorModeButton from "../Misc/ColorToggle";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-  const navigate = useNavigate();
+  const navigateTo = useNavigate();
   const toast = useToast();
 
   const [email, setEmail] = useState("");
@@ -49,7 +48,7 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/home");
+      navigateTo("/home");
     }
   }, []);
 
@@ -74,7 +73,7 @@ const Login = () => {
           isClosable: true,
         });
 
-        navigate("/home");
+        navigateTo("/home");
       } catch (error) {
         toast({
           title: "Google login failed.",
@@ -126,7 +125,7 @@ const Login = () => {
           isClosable: true,
         });
 
-        navigate("/home");
+        navigateTo("/home");
       } catch (error) {
         toast({
           title: "Login Failed",
@@ -137,11 +136,11 @@ const Login = () => {
         });
       }
     },
-    [email, password, toast, navigate]
+    [email, password, toast, navigateTo]
   );
 
   return (
-    <Box bg={bgColor} color={textColor} minH="100vh">
+    <Box bg={bgColor} color={textColor} minH="100vh" display="flex" flexDirection="column">
       <Flex color={footerColor} bg={footerBg} py={2} px={4} align="center">
         <Text
           fontSize="3xl"
@@ -158,100 +157,107 @@ const Login = () => {
         <ColorModeButton />
       </Flex>
 
-      <Box height="83.5vh" position="relative">
-        <AbsoluteCenter>
-          <Box
-            bgGradient={bgGradient}
-            border="1px solid"
+      <Box flex="1" position="relative" display="flex" alignItems="center" justifyContent="center">
+        <Box
+          bgGradient={bgGradient}
+          border="1px solid"
+          borderColor={borderColor}
+          borderRadius="2xl"
+          px={10}
+          pb={10}
+          w="460px"
+          maxW="90vw"
+        >
+          <Center fontSize="xl" fontWeight="semibold" py={6} color={useColorModeValue("blue.800", "whiteAlpha.900")}>
+            Login to Your Account
+          </Center>
+
+          <Flex
+            align="center"
+            justify="center"
+            border="1px"
             borderColor={borderColor}
-            borderRadius="2xl"
-            px={10}
-            pb={10}
-            w="460px"
-            maxW="90vw"
+            rounded="md"
+            py={2}
+            px={4}
+            mb={4}
+            cursor="pointer"
+            _hover={{ bg: useColorModeValue("gray.200", "gray.700"), transform: "scale(1.05)", transition: "all 0.2s ease" }}
+            onClick={googleLogin}
           >
-            <Center fontSize="xl" fontWeight="semibold" py={6} color={useColorModeValue("blue.800", "whiteAlpha.900")}>
-              Login to Your Account
-            </Center>
-
-            <Flex
-              align="center"
-              justify="center"
-              border="1px"
-              borderColor={borderColor}
-              rounded="md"
-              py={2}
-              px={4}
-              mb={4}
-              cursor="pointer"
-              _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
-              onClick={googleLogin}
-            >
-              <img src={google} alt="google" width="20px" style={{ marginRight: "10px" }} />
-              <Text fontSize="md" color={subTextColor}>
-                Login with Google
-              </Text>
-            </Flex>
-
-            <Center fontSize="sm" my={2}>
-              OR
-            </Center>
-
-            <InputGroup mb={4}>
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your Email"
-                type="email"
-                variant="filled"
-              />
-            </InputGroup>
-
-            <InputGroup mb={4}>
-              <Input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your Password"
-                variant="filled"
-              />
-              <InputRightElement>
-                <IconButton
-                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle Password"
-                  variant="link"
-                />
-              </InputRightElement>
-            </InputGroup>
-
-            <Button
-              w="full"
-              py={5}
-              fontSize="sm"
-              mt={2}
-              bgGradient="linear(to-r, blue.600, blue.800)"
-              color="white"
-              _hover={{ opacity: 0.9 }}
-              onClick={handleSubmit}
-            >
-              Welcome Back
-            </Button>
-
-            <Text mt={4} fontSize="md" color={subTextColor} textAlign="center">
-              Don’t have an account?{" "}
-              <Text
-                as="span"
-                color={linkColor}
-                cursor="pointer"
-                fontWeight="medium"
-                onClick={() => navigate("/signup")}
-              >
-                Sign Up
-              </Text>
+            <img src={google} alt="google" width="20px" style={{ marginRight: "10px" }} />
+            <Text fontSize="md" color={subTextColor}>
+              Login with Google
             </Text>
-          </Box>
-        </AbsoluteCenter>
+          </Flex>
+
+          <Center fontSize="sm" my={2} fontWeight={"bold"}>
+            OR
+          </Center>
+
+          <InputGroup mb={4}>
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your Email"
+              type="email"
+              variant="filled"
+              transition="all 0.2s ease"
+              _hover={{ transform: "scale(1.02)" }}
+              _focus={{ transform: "scale(1.02)" }}
+            />
+          </InputGroup>
+
+          <InputGroup mb={4}>
+            <Input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your Password"
+              variant="filled"
+              transition="all 0.2s ease"
+              _hover={{ transform: "scale(1.02)" }}
+              _focus={{ transform: "scale(1.02)" }}
+            />
+            <InputRightElement>
+              <IconButton
+                icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle Password"
+                variant="link"
+              />
+            </InputRightElement>
+          </InputGroup>
+
+          <Button
+            w="full"
+            py={5}
+            fontSize="sm"
+            mt={2}
+            bgGradient="linear(to-r, blue.600, blue.800)"
+            color="white"
+            transition="all 0.2s ease"
+            _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
+            onClick={handleSubmit}
+          >
+            Welcome Back
+          </Button>
+
+          <Text mt={4} fontSize="md" color={subTextColor} textAlign="center">
+            Don't have an account?{" "}
+            <Text
+              as="span"
+              color={linkColor}
+              cursor="pointer"
+              fontWeight="medium"
+              transition="all 0.2s ease"
+              _hover={{ textDecoration: "underline" }}
+              onClick={() => navigateTo("/signup")}
+            >
+              Sign Up
+            </Text>
+          </Text>
+        </Box>
       </Box>
 
       <Center bg={footerBg} py={2}>

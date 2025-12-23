@@ -4,8 +4,12 @@ import {
   Center,
   Flex,
   Input,
-  Text,
   useColorModeValue,
+  VStack,
+  Container,
+  Heading,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { useState, useRef, useCallback, useMemo } from 'react';
 import axios from 'axios';
@@ -28,7 +32,13 @@ const Home = () => {
 
   const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
-  const borderColor = useColorModeValue('black', 'whiteAlpha.700');
+  const inputBg = useColorModeValue('white', 'gray.800');
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const buttonBg = useColorModeValue('blue.500', 'blue.600');
+  const buttonHoverBg = useColorModeValue('blue.600', 'blue.500');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const inputBorderColor = useColorModeValue('gray.300', 'gray.600');
+  const inputBorderColorHover = useColorModeValue('gray.400', 'gray.500');
 
   const API_URL = import.meta.env.VITE_API_URL;
   
@@ -115,85 +125,159 @@ const fetchContent = useCallback(async (url) => {
   };
 
   return (
-    <Box bg={bg} color={textColor} py={4} className="font-openSans">
-      <div class="flex justify-between items-center mx-4 md:min-w-[60px] lg:min-w-[80vw]">
-        <SideDrawer />
-        <UserProfileModal />
-        <Text
-          fontSize="3xl"
-          fontWeight="bold"
-          textAlign="center"
-          flex="1"
-          marginLeft="-100"
-          className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent"
-        >
-          MindTube
-        </Text>
-        <ColorModeButton />
-      </div>
-
-      <Box p={4} mb={-4}>
-       <Flex gap={4}>
-          <Input
-            placeholder="Paste video URL and press Enter"
-            value={inputUrl}
-            onChange={(e) => setInputUrl(e.target.value)}
-            onKeyDown={handleKeyDown}
-            borderColor={borderColor}
-            color={textColor}
-            mb={4}
-          />
-          <Button 
-            borderWidth="2px"
-            borderColor={borderColor}
-            onClick={() => saveNotepad(notepadText)}
-            bg={useColorModeValue('gray.100', 'blackgray.900')} 
-            _hover={{
-            bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
-            transform: 'scale(1.05)',
-            transition: 'all 0.2s ease',
-            }}
+    <Box bg={bg} color={textColor} minH="100vh" className="font-openSans">
+      {/* Header */}
+      <Box 
+        borderBottom="1px solid" 
+        borderColor={borderColor}
+        bg={cardBg}
+        shadow="sm"
+        position="sticky"
+        top={0}
+        zIndex={10}
+      >
+        <Container maxW="container.xl" py={4}>
+          <Flex align="center" justify="space-between" gap={4}>
+            <SideDrawer />
+            <Heading
+              as="h1"
+              size="xl"
+              flex="1"
+              textAlign="center"
+              className="bg-gradient-to-b from-[#57a0e9] to-[#212b35] bg-clip-text text-transparent"
+              fontWeight="bold"
             >
-            Save
-          </Button>
-        </Flex>
-
-        {videoUrl && (
-          <Center>
-            {isYouTube ? (
-              <iframe
-                src={videoUrl}
-                className="w-[70vw] h-[70vh]"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title="YouTube Player"
-              />
-            ) : (
-              <video
-                src={videoUrl}
-                controls
-                onError={() => setError('❌ Could not load the video.')}
-                style={{ maxWidth: '70vw', maxHeight: '70vh' }}
-              />
-            )}
-          </Center>
-        )}
-
-        {error && <Center color="red.500">{error}</Center>}
+              MindTube
+            </Heading>
+            <Flex align="center" gap={3}>
+              <UserProfileModal />
+              <ColorModeButton />
+            </Flex>
+          </Flex>
+        </Container>
       </Box>
 
-      <div class="flex flex-col md:flex-col lg:flex-row gap-2">
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
-          <Notepad
-            text={notepadText}
-            setText={setNotepadText}
-            isReadOnly={isReadOnly}
-          />
-        </div>
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
-          <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
-        </div>
-      </div>
+      {/* Main Content */}
+      <Container maxW="container.xl" py={6}>
+        <VStack spacing={6} align="stretch">
+          {/* URL Input Section */}
+          <Box
+            bg={cardBg}
+            p={6}
+            borderRadius="xl"
+            shadow="md"
+            border="1px solid"
+            borderColor={borderColor}
+          >
+            <Flex gap={3} flexDirection={{ base: 'column', md: 'row' }}>
+              <Input
+                placeholder="Paste video URL (YouTube, MP4, WebM, OGG) and press Enter"
+                value={inputUrl}
+                onChange={(e) => setInputUrl(e.target.value)}
+                onKeyDown={handleKeyDown}
+                bg={inputBg}
+                borderColor={inputBorderColor}
+                color={textColor}
+                size="lg"
+                _hover={{
+                  borderColor: inputBorderColorHover,
+                }}
+                _focus={{
+                  borderColor: 'blue.500',
+                  boxShadow: '0 0 0 1px var(--chakra-colors-blue-500)',
+                }}
+                flex="1"
+                transition="all 0.2s"
+              />
+              <Button 
+                onClick={() => saveNotepad(notepadText)}
+                bg={buttonBg}
+                color="white"
+                size="lg"
+                px={8}
+                fontWeight="semibold"
+                _hover={{
+                  bg: buttonHoverBg,
+                  transform: 'translateY(-1px)',
+                  boxShadow: 'lg',
+                }}
+                transition="all 0.2s"
+              >
+                Save
+              </Button>
+            </Flex>
+
+            {error && (
+              <Alert status="error" mt={4} borderRadius="md">
+                <AlertIcon />
+                {error}
+              </Alert>
+            )}
+          </Box>
+
+          {/* Video Player Section */}
+          {videoUrl && (
+            <Box
+              bg={cardBg}
+              p={4}
+              borderRadius="xl"
+              shadow="md"
+              border="1px solid"
+              borderColor={borderColor}
+              overflow="hidden"
+            >
+              <Center>
+                <Box
+                  borderRadius="lg"
+                  overflow="hidden"
+                  shadow="xl"
+                  w="100%"
+                  maxW={{ base: '100%', md: '90%', lg: '80%' }}
+                  aspectRatio="16/9"
+                  bg="black"
+                >
+                  {isYouTube ? (
+                    <iframe
+                      src={videoUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 'none' }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="YouTube Player"
+                    />
+                  ) : (
+                    <video
+                      src={videoUrl}
+                      controls
+                      onError={() => setError('❌ Could not load the video.')}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  )}
+                </Box>
+              </Center>
+            </Box>
+          )}
+
+          {/* Notepad and Whiteboard Section */}
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            gap={4}
+            align="stretch"
+          >
+            <Box flex={{ base: '1', lg: '0 0 40%' }} minW={0}>
+              <Notepad
+                text={notepadText}
+                setText={setNotepadText}
+                isReadOnly={isReadOnly}
+              />
+            </Box>
+            <Box flex={{ base: '1', lg: '0 0 58%' }} minW={0}>
+              <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
+            </Box>
+          </Flex>
+        </VStack>
+      </Container>
     </Box>
   );
 };
