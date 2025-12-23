@@ -7,8 +7,6 @@ const contentRoutes = require('./routes/content-route');
 const { notFound, errorHandler } = require('./misc/errors');
 const path = require('path');
 
-
-
 dotenv.config();
 
 connectDB();
