@@ -53,13 +53,13 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room of ${roomId}`);
+  })
   socket.on("note:update", ({ roomId, content }) => {
   socket.to(roomId).emit("note:sync", { content });
 });
-
-  socket.on("board:update", (point) => {
-    socket.broadcast.emit("board:sync", point);
-  });
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);

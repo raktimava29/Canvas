@@ -59,15 +59,16 @@ var io = new Server(server, {
 });
 io.on("connection", function (socket) {
   console.log("User connected:", socket.id);
+  socket.on("join-room", function (roomId) {
+    socket.join(roomId);
+    console.log("Socket ".concat(socket.id, " joined room of ").concat(roomId));
+  });
   socket.on("note:update", function (_ref) {
     var roomId = _ref.roomId,
         content = _ref.content;
     socket.to(roomId).emit("note:sync", {
       content: content
     });
-  });
-  socket.on("board:update", function (point) {
-    socket.broadcast.emit("board:sync", point);
   });
   socket.on("disconnect", function () {
     console.log("User disconnected:", socket.id);

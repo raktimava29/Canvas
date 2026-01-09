@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
+import Notepad from "./Notepad/Notepad";
+import { Box, useColorModeValue } from "@chakra-ui/react";
 
 const socket = io("http://localhost:5000");
 
@@ -9,30 +11,34 @@ export default function Test() {
 
   const [text, setText] = useState("");
   const [user, setUser] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const bg = useColorModeValue('gray.100', 'gray.900');
+  const textColor = useColorModeValue('black', 'whiteAlpha.900');
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("userInfo"));
     setUser(storedUser);
 
     socket.emit("join-room", roomId);
+    console.log(roomId);
+    console.log(storedUser._id);
 
     socket.on("note:sync", (data) => {
         setText(data.content);
       });
 
-    return () => {
+    return () => {  
       socket.off("note:sync");
     };
   }, [roomId]);
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setText(value);
-    socket.emit("note:update", { roomId, content: value });
-  };
+  const handleChange = (value) => {
+  setText(value);
+  socket.emit("note:update", { roomId, content: value });
+};
 
   return (
-    <div style={{ padding: 20 }}>
+    <Box bg={bg} color={textColor} pb={2} className="font-openSans">
       
       <div
         style={{
@@ -50,19 +56,14 @@ export default function Test() {
         <small>Room: {roomId}</small>
       </div>
 
-      <textarea
-        value={text}
-        onChange={handleChange}
-        rows={10}
-        cols={50}
-        style={{
-          border: "1px solid black",
-          width: "100%",
-          padding: 10,
-          fontSize: 16,
-        }}
+      <div className="w-[50vw]">
+        <Notepad
+        text={text}
+        setText={handleChange}
+        isReadOnly={isReadOnly}
       />
+      </div>
 
-    </div>
+    </Box>
   );
 }

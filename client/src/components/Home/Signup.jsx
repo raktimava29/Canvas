@@ -71,7 +71,7 @@ const Signup = () => {
           isClosable: true,
         });
 
-        navigateTo("/home");
+        navigateTo("/");
       } catch (error) {
         console.error("Google Signup Error:", error?.response?.data || error.message);
 
@@ -121,7 +121,7 @@ const Signup = () => {
         isClosable: true,
       });
 
-      navigateTo("/login");
+      navigateTo("/");
     } catch (err) {
       console.error("Signup Error:", err?.response?.data || err.message);
 
@@ -144,7 +144,7 @@ const Signup = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigateTo("/home");
+      navigateTo("/");
     }
   }, []);
 
