@@ -19,11 +19,3 @@ function App() {
 }
 
 export default App;
-
-// const App = () => {
-//   return (
-//     <Test/>
-//   )
-// }
-
-// export default App
