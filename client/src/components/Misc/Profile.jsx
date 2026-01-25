@@ -32,13 +32,13 @@ const UserProfile = () => {
   const borderColor = useColorModeValue("black", "white");
 
   const handleLogout = () => {
-    localStorage.removeItem("userInfo");
+    localStorage.clear();
     navigateTo("/");
   };
 
   const name = user?.name || "User";
   const email = user?.email || "No Email";
-  const avatarSrc = user?.pic || "/profile-icon.png"; 
+  const avatarSrc = user?.pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
 
   return (
     <>
