@@ -4,7 +4,7 @@ from datetime import datetime
 from app.schemas.user import UserCreate, UserLogin
 from app.schemas.auth import AuthResponse, GoogleSignupRequest, GoogleLoginRequest
 
-from app.core.database import users_collections
+from app.core.database import user_collection
 from app.core.security import (
     hash_password,
     create_access_token,
@@ -12,7 +12,7 @@ from app.core.security import (
 )
 
 async def register_user(payload: UserCreate):
-    existing_user = await users_collections.find_one({
+    existing_user = await user_collection.find_one({
             "email": payload.email
         })
     
@@ -33,7 +33,7 @@ async def register_user(payload: UserCreate):
         "updatedAt": datetime.utcnow()
     }
     
-    result = await users_collections.insert_one(user_data)
+    result = await user_collection.insert_one(user_data)
     
     token = create_access_token({
             "id": str(result.inserted_id)
@@ -47,7 +47,7 @@ async def register_user(payload: UserCreate):
     )
     
 async def login_user(payload: UserLogin):
-    user = await users_collections.find_one({
+    user = await user_collection.find_one({
             "email": payload.email
         })
     
@@ -75,7 +75,7 @@ async def login_user(payload: UserLogin):
     )
     
 async def google_signup(payload: GoogleSignupRequest):
-    existing_user = await users_collections.find_one({
+    existing_user = await user_collection.find_one({
         "email": payload.email
     })
     
@@ -94,7 +94,7 @@ async def google_signup(payload: GoogleSignupRequest):
         "updatedAt": datetime.utcnow()
     }
     
-    result = await users_collections.insert_one(
+    result = await user_collection.insert_one(
         user_data
     )
     
@@ -111,7 +111,7 @@ async def google_signup(payload: GoogleSignupRequest):
     
 async def google_login(payload: GoogleLoginRequest):
     
-    user = await users_collections.find_one({
+    user = await user_collection.find_one({
         "email": payload.email
     })
     

@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from bson import ObjectId
 
 from app.core.security import verify_access_token
-from app.core.database import users_collections
+from app.core.database import user_collection
 
 security = HTTPBearer()
 
@@ -18,7 +18,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             deatil="Unauthorized"
         )
     
-    user = await users_collections.find_one({
+    user = await user_collection.find_one({
         "_id": ObjectId(user_id)
     })
         

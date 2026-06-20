@@ -7,11 +7,22 @@ from app.middleware.error_handler import (
     generic_exception_handler    
 )
 
+from contextlib import asynccontextmanager
+
+from app.core.database import create_indexes
+
+@asynccontextmanager
+async def lifespan(app):
+    await create_indexes()
+    yield
+
 from app.core.database import client,db
 from app.core.config import settings
 from app.routers.user_router import router as user_router
 
-app = FastAPI()
+from app.core.database import content_collection
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_exception_handler(
     HTTPException,
@@ -41,6 +52,7 @@ async def health():
             "databases": databases,
             "collections": collections
         }
+
         
 # from app.core.security import (
 #     hash_password,

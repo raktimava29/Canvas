@@ -5,5 +5,14 @@ from app.core.config import settings
 client = AsyncMongoClient(settings.MONGO_URI)
 
 db = client["test"]
-users_collections = db["users"]
-contents_collections = db["contents"]
+user_collection = db["users"]
+content_collection = db["contents"]
+
+async def create_indexes():
+    await content_collection.create_index(
+        [
+            ("videoUrl", 1),
+            ("user", 1)
+        ],
+        unique=True
+    )

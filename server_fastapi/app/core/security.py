@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
 
 import jwt
@@ -29,10 +30,23 @@ def create_access_token(user_id:str):
     )
     
 def verify_access_token(token:str):
-    payload = jwt.decode(
-        token,
-        settings.JWT_SECRET,
-        algorithms=["HS256"]
-    )
+    try:
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET,
+            algorithms=["HS256"]
+        )
+        
+        return payload
     
-    return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=401,
+            detail="Token expired"
+        )
+        
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
