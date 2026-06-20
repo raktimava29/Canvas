@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pymongo
+pydantic
+pydantic-settings
+python-dotenv
+PyJWT
+email-validator
+passlib[bcrypt]
+bcrypt==4.0.1
