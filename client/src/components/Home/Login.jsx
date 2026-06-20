@@ -64,7 +64,9 @@ const Login = () => {
           googleId: googleData.sub,
         });
 
-        localStorage.setItem("userInfo", JSON.stringify(userData));
+        localStorage.setItem(
+        "userInfo",
+        JSON.stringify({ ...userData, pic: googleData.picture }));
 
         toast({
           title: "Logged in with Google!",

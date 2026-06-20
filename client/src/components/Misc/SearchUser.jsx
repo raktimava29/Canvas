@@ -47,8 +47,6 @@ const SearchUser = () => {
 }, [id]);
 
   const fetchContent = async (url) => {
-    console.log(id);
-    console.log('Fetching content for URL:', url);
     try {
       const res = await axios.get(`${API_URL}/api/content/shared`, {
         params: {
@@ -56,9 +54,6 @@ const SearchUser = () => {
             userId: id, 
         },
         });
-      
-      const data = res.data;
-      console.log('Content fetched:', data);
 
       const { notepadText, canvasImage } = res.data;
       setNotepadText(notepadText || '');

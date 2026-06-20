@@ -43,7 +43,6 @@ const SideDrawer = () => {
     try {
       setLoading(true);
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      console.log(userInfo);
       const config = {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
@@ -114,7 +113,6 @@ const SideDrawer = () => {
                     bg={bgColor}
                     _hover={{ bg: hoverColor, cursor: 'pointer' }}
                     onClick={() => {
-                      console.log('Selected user:', user);
                       navigateTo(`/${user._id}`);
                       onClose();
                     }}
