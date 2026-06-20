@@ -112,7 +112,9 @@ async def google_signup(payload: GoogleSignupRequest):
 async def google_login(payload: GoogleLoginRequest):
     
     user = await user_collection.find_one({
-        "email": payload.email
+        "email": payload.email,
+        "googleId": payload.googleId,
+        "isOAuth": True
     })
     
     if not user or not user.get("isOAuth"):

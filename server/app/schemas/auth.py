@@ -18,3 +18,4 @@ class GoogleSignupRequest(BaseModel):
     
 class GoogleLoginRequest(BaseModel):
     email: EmailStr
+    googleId: str

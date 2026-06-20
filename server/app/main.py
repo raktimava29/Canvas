@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from pymongo.errors import PyMongoError
 from app.middleware.error_handler import (
@@ -23,6 +24,17 @@ from app.routers.user_router import router as user_router
 from app.core.database import content_collection
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://mindtube-pied.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.add_exception_handler(
     HTTPException,
