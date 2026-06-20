@@ -113,7 +113,7 @@ const fetchContent = useCallback(async (url) => {
         }
 
         if (!videoId) throw new Error('Invalid YouTube URL');
-        originalUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        originalUrl = inputUrl
         setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
       } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
         setVideoUrl(inputUrl);

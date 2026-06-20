@@ -29,6 +29,9 @@ async def save_content(payload: ContentSaveRequest, current_user):
         return_document=ReturnDocument.AFTER
     )
     
+    content["_id"] = str(content["_id"])
+    content["user"] = str(content["user"])
+    
     return content
 
 async def get_content(videoUrl: str, current_user, userId: str | None = None):
@@ -49,4 +52,7 @@ async def get_content(videoUrl: str, current_user, userId: str | None = None):
             detail="No content found for this url by the user"
         )
         
-    return content        
+    content["_id"] = str(content["_id"])
+    content["user"] = str(content["user"])
+    
+    return content

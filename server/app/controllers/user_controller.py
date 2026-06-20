@@ -35,9 +35,7 @@ async def register_user(payload: UserCreate):
     
     result = await user_collection.insert_one(user_data)
     
-    token = create_access_token({
-            "id": str(result.inserted_id)
-        })
+    token = create_access_token(str(result.inserted_id))
     
     return AuthResponse(
         id=str(result.inserted_id),
@@ -63,9 +61,7 @@ async def login_user(payload: UserLogin):
             detail="Invalid credentials"
         )
         
-    token = create_access_token({
-        "id": str(user["_id"])
-    })
+    token = create_access_token(str(user["_id"]))
     
     return AuthResponse(
         id=str(user["_id"]),
@@ -98,9 +94,7 @@ async def google_signup(payload: GoogleSignupRequest):
         user_data
     )
     
-    token = create_access_token({
-        "id": str(result.inserted_id)
-    })
+    token = create_access_token(str(result.inserted_id))
     
     return AuthResponse(
         id=str(result.inserted_id),
@@ -123,9 +117,7 @@ async def google_login(payload: GoogleLoginRequest):
             detail="Invalid credentials"
         )
         
-    token = create_access_token({
-        "id": str(user["_id"])
-    })
+    token = create_access_token(str(user["_id"]))
     
     return AuthResponse(
         id=str(user["_id"]),

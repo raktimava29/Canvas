@@ -20,6 +20,7 @@ async def lifespan(app):
 from app.core.database import client,db
 from app.core.config import settings
 from app.routers.user_router import router as user_router
+from app.routers.content_router import router as content_router
 
 from app.core.database import content_collection
 
@@ -52,6 +53,7 @@ app.add_exception_handler(
 )
 
 app.include_router(user_router)
+app.include_router(content_router)
 
 @app.get("/")
 async def health():
