@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends
 
 from app.core.dependencies import get_current_user
 
-from app.controllers.content_controller import save_content, get_content
+from app.controllers.content_controller import (
+    save_content, 
+    get_content,
+    get_shared_content
+)
 
 from app.schemas.content import ContentSaveRequest
 
@@ -18,3 +22,8 @@ async def save(payload: ContentSaveRequest, current_user=Depends(get_current_use
 @router.get("/")
 async def get(videoUrl:str, userId: str | None = None, current_user=Depends(get_current_user)):
     return await get_content(videoUrl, current_user, userId)
+
+@router.get("/shared")
+async def get_shared(videoUrl: str, userId: str):
+    return await get_shared_content(videoUrl, userId)
+

@@ -1,6 +1,8 @@
 from fastapi import HTTPException
 from datetime import datetime
 
+from bson import ObjectId
+
 from app.schemas.user import UserCreate, UserLogin
 from app.schemas.auth import AuthResponse, GoogleSignupRequest, GoogleLoginRequest
 
@@ -46,7 +48,8 @@ async def register_user(payload: UserCreate):
     
 async def login_user(payload: UserLogin):
     user = await user_collection.find_one({
-            "email": payload.email
+            "email": payload.email,
+            "isOAuth": False
         })
     
     if not user:
@@ -54,7 +57,7 @@ async def login_user(payload: UserLogin):
             status_code=401,
             detail="Invalid credentials"
         )
-        
+            
     if not verify_password(payload.password, user["password"]):
         raise HTTPException(
             status_code=401,
@@ -111,9 +114,9 @@ async def google_login(payload: GoogleLoginRequest):
         "isOAuth": True
     })
     
-    if not user or not user.get("isOAuth"):
+    if not user:
         raise HTTPException(
-            status_code=404,
+            status_code=401,
             detail="Invalid credentials"
         )
         
@@ -125,3 +128,42 @@ async def google_login(payload: GoogleLoginRequest):
         email=user["email"],
         token=token
     )
+    
+async def search_users(search: str, current_user):
+    query = {}
+    
+    if search:
+        query["name"] = {
+            "$regex": search,
+            "$options": "i",
+        }
+        
+    users = await user_collection.find(query).to_list(None)
+    
+    users = [
+        user 
+        for user in users
+        if str(user["_id"]) != str(current_user["_id"])
+    ]
+    
+    for user in users:
+        user["_id"] = str(user["_id"])
+        user.pop("password", None)
+        
+    return users
+
+async def get_user_by_id(user_id: str):
+    user = await user_collection.find_one({
+        "_id": ObjectId(user_id)
+    })
+    
+    if not user:
+        raise HTTPException(
+            status_code=400,
+            detail="User not found"
+        )
+    
+    user["_id"] = str(user["_id"])
+    user.pop("password", None)  
+    
+    return user

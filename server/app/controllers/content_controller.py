@@ -56,3 +56,21 @@ async def get_content(videoUrl: str, current_user, userId: str | None = None):
     content["user"] = str(content["user"])
     
     return content
+
+async def get_shared_content(videoUrl: str, userId: str):
+    content = await content_collection.find_one({
+        "videoUrl": videoUrl,
+        "user": ObjectId(userId)
+    })
+    
+    if not content:
+        raise HTTPExpection(
+            status_code=404,
+            detail="No content found for this URL and user"
+        )
+        
+    content["_id"] = str(content["_id"])
+    content["user"] = str(content["user"])
+    
+    return content
+

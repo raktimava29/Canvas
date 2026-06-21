@@ -84,7 +84,7 @@ const SearchUser = () => {
       }
     } catch (err) {
       console.error('Fetch error:', err);
-      setError('❌ No content found for this video.');
+      setError('No content found for this video.');
       setVideoUrl('');
       setNotepadText('');
     }
@@ -97,7 +97,7 @@ const SearchUser = () => {
       const url = new URL(inputUrl);
       fetchContent(url.toString());
     } catch {
-      setError('❌ Invalid URL format');
+      setError('Invalid URL format');
     }
   };
 
@@ -157,7 +157,7 @@ const SearchUser = () => {
             <video
               src={videoUrl}
               controls
-              onError={() => setError('❌ Could not load the video.')}
+              onError={() => setError('Could not load the video.')}
               style={{ maxWidth: '70vw', maxHeight: '70vh' }}
             />
           </Center>
