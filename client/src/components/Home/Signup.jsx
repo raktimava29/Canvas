@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SunIcon, MoonIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import ColorModeButton from "../Misc/ColorToggle";
+import api from "../../api/axios";
 
 const Signup = () => {
   const navigateTo = useNavigate();
@@ -28,6 +29,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const bgGradient = useColorModeValue(
     "linear(to-br, gray.50, gray.100)",
@@ -41,8 +43,6 @@ const Signup = () => {
   const bgColor = useColorModeValue("white", "gray.800");
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
-
-    const API_URL = import.meta.env.VITE_API_URL;
 
   const googleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -58,7 +58,7 @@ const Signup = () => {
 
         const { name, email, sub: googleId } = data;
 
-        await axios.post(`${API_URL}/api/user/google-signup`, {
+        await api.post("/api/user/google-signup", {
           username: name,
           email,
           googleId,
@@ -107,8 +107,10 @@ const Signup = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
-      await axios.post(`${API_URL}/api/user`, {
+      await api.post("/api/user", {
         name: username,
         email,
         password,
@@ -132,6 +134,8 @@ const Signup = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -259,6 +263,7 @@ const Signup = () => {
               transition="all 0.2s ease"
               _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
               onClick={handleSubmit}
+              isLoading={loading}
             >
               Create an Account
             </Button>

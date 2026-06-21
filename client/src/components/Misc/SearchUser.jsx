@@ -5,15 +5,16 @@ import {
   Heading,
   IconButton,
   Input,
+  Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
 import ColorModeButton from '../Misc/ColorToggle';
 import { FaHome } from 'react-icons/fa';
+import api from '../../api/axios';
 
 const SearchUser = () => {
   const { id } = useParams();
@@ -25,18 +26,17 @@ const SearchUser = () => {
   const [isYouTube, setIsYouTube] = useState(false);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigateTo = useNavigate();
 
   const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
   useEffect(() => {
   const fetchUserName = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/api/user/${id}`); 
+      const { data } = await api.get(`/api/user/${id}`); 
       setUserName(data.name);
     } catch (err) {
       console.error('Failed to fetch user name:', err);
@@ -47,8 +47,11 @@ const SearchUser = () => {
 }, [id]);
 
   const fetchContent = async (url) => {
+
+    setLoading(true);
+
     try {
-      const res = await axios.get(`${API_URL}/api/content/shared`, {
+      const res = await api.get("/api/content/shared", {
         params: {
             videoUrl: url,
             userId: id, 
@@ -87,17 +90,21 @@ const SearchUser = () => {
       setError('No content found for this video.');
       setVideoUrl('');
       setNotepadText('');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
+    if (e.key !== 'Enter' || loading) return;
     setError(null);
     try {
       const url = new URL(inputUrl);
       fetchContent(url.toString());
     } catch {
       setError('Invalid URL format');
+      setVideoUrl('');
+      setNotepadText('');
     }
   };
 
@@ -137,7 +144,13 @@ const SearchUser = () => {
             borderColor={borderColor}
             color={textColor}
             mb={4}
+            isDisabled={loading}
           />
+          {loading && (
+            <Center my={4}>
+              <Spinner size="lg" />
+            </Center>
+          )}
         </Flex>
 
         {videoUrl && isYouTube && (
@@ -166,11 +179,11 @@ const SearchUser = () => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <div class="flex flex-col md:flex-col lg:flex-row gap-2">
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
+      <div className="flex flex-col md:flex-col lg:flex-row gap-2">
+        <div className="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
           <Notepad text={notepadText} setText={() => {}} isReadOnly={true} />
         </div>
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
+        <div className="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
           <Whiteboard ref={whiteboardRef} isReadOnly={true} />
         </div>
       </div>

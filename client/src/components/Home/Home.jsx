@@ -14,12 +14,12 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState, useRef, useCallback, useMemo } from 'react';
-import axios from 'axios';
 import Notepad from '../Notepad/Notepad';
 import Whiteboard from '../Whiteboard/Whiteboard';
 import SideDrawer from '../Misc/SideDrawer';
 import UserProfileModal from '../Misc/Profile';
 import ColorModeButton from '../Misc/ColorToggle';
+import api from "../../api/axios"
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState('');
@@ -42,8 +42,6 @@ const Home = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const inputBorderColor = useColorModeValue('gray.300', 'gray.600');
   const inputBorderColorHover = useColorModeValue('gray.400', 'gray.500');
-
-  const API_URL = import.meta.env.VITE_API_URL;
   
   const saveNotepad = useCallback(async (note) => {
     if (!inputUrl || !note) {
@@ -58,26 +56,26 @@ const Home = () => {
 
     try {
       const canvasImage = whiteboardRef.current?.exportCanvasAsImage();
-      const res = await axios.post(
-        `${API_URL}/api/content/save`,
+      await api.post(
+        "/api/content/save",
         { videoUrl: inputUrl, notepadText: note, canvasImage },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            'Content-type': 'application/json',
-          },
-        }
       );
+
+      toast({
+        title: "Saved",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     } catch (err) {
       console.error('Save failed:', err.response?.data || err.message);
     }
-  }, [inputUrl, user]);
+  }, [inputUrl]);
 
   const fetchContent = useCallback(async (url) => {
     try {
-      const res = await axios.get(`${API_URL}/api/content`, {
+      const res = await api.get("/api/content", {
         params: { videoUrl: url },
-        headers: { Authorization: `Bearer ${user?.token}` },
       });
 
       const data = res.data;
@@ -99,7 +97,6 @@ const Home = () => {
       try {
         const url = new URL(inputUrl);
         let videoId = '';
-        let originalUrl = inputUrl;
         let isYT = false;
 
         if (url.hostname.includes('youtube.com') || url.hostname === 'youtu.be') {
@@ -113,7 +110,6 @@ const Home = () => {
           }
 
           if (!videoId) throw new Error('Invalid YouTube URL');
-          originalUrl = inputUrl
           setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
         } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
           setVideoUrl(inputUrl);
@@ -122,9 +118,9 @@ const Home = () => {
           throw new Error('Unsupported video format or platform');
         }
 
-        setInputUrl(originalUrl);
+        setInputUrl(inputUrl);
         setIsYouTube(isYT);
-        fetchContent(originalUrl);
+        fetchContent(inputUrl);
       } catch (err) {
         console.error('Invalid URL entered:', err.message);
         setVideoUrl('');

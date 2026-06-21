@@ -57,15 +57,9 @@ app.include_router(content_router)
 
 @app.get("/")
 async def health():
-        
-        databases = await client.list_database_names()
-        collections = await db.list_collection_names()
-        
-        return {
-            "status": "healthy",
-            "databases": databases,
-            "collections": collections
-        }
+    return {
+        "status": "healthy"
+    }
 
         
 # from app.core.security import (

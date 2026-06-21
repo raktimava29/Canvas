@@ -19,8 +19,7 @@ import axios from "axios";
 import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import ColorModeButton from "../Misc/ColorToggle";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import api from "../../api/axios";
 
 const Login = () => {
   const navigateTo = useNavigate();
@@ -29,6 +28,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const bgGradient = useColorModeValue("linear(to-br, gray.50, gray.100)", "linear(to-br, gray.900, gray.800)");
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -59,7 +59,7 @@ const Login = () => {
           headers: { Authorization: `Bearer ${access_token}` },
         });
 
-        const { data: userData } = await axios.post(`${API_URL}/api/user/google-login`, {
+        const { data: userData } = await api.post("/api/user/google-login", {
           email: googleData.email,
           googleId: googleData.sub,
         });
@@ -112,11 +112,12 @@ const Login = () => {
         return;
       }
 
+      setLoading(true);
+
       try {
-        const { data } = await axios.post(
-          `${API_URL}/api/user/login`,
+        const { data } = await api.post(
+          "/api/user/login",
           { email, password },
-          { headers: { "Content-type": "application/json" } }
         );
 
         localStorage.setItem("userInfo", JSON.stringify(data));
@@ -137,9 +138,11 @@ const Login = () => {
           duration: 5000,
           isClosable: true,
         });
+      } finally {
+        setLoading(false);
       }
     },
-    [email, password, toast, navigateTo]
+    [email, password, loading, toast, navigateTo]
   );
 
   return (
@@ -242,6 +245,7 @@ const Login = () => {
             transition="all 0.2s ease"
             _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
             onClick={handleSubmit}
+            isLoading={loading}
           >
             Welcome Back
           </Button>

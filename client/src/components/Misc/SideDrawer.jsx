@@ -16,8 +16,8 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from "../../api/axios"
 
 const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,10 +27,8 @@ const SideDrawer = () => {
   const toast = useToast();
   const navigateTo = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const handleSearch = async () => {
-    if (!search) {
+    if (!search.trim()) {
       toast({
         title: 'Please enter something to search.',
         status: 'warning',
@@ -40,15 +38,11 @@ const SideDrawer = () => {
       return;
     }
 
+    if (loading) return;
+
     try {
       setLoading(true);
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      };
-      const { data } = await axios.get(`${API_URL}/api/user?search=${search}`, config);
+      const { data } = await api.get(`/api/user?search=${search}`);
       setSearchResult(data);
     } catch (error) {
       toast({

@@ -149,6 +149,7 @@ async def search_users(search: str, current_user):
     for user in users:
         user["_id"] = str(user["_id"])
         user.pop("password", None)
+        user.pop("googleId", None)
         
     return users
 

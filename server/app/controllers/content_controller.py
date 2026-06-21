@@ -64,7 +64,7 @@ async def get_shared_content(videoUrl: str, userId: str):
     })
     
     if not content:
-        raise HTTPExpection(
+        raise HTTPException(
             status_code=404,
             detail="No content found for this URL and user"
         )
