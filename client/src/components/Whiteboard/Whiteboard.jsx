@@ -99,7 +99,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
     ctx.lineWidth = lineWidth;
     ctxRef.current = ctx;
 
-    const initialImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const initialImage = canvas.toDataURL("image/png");
     setHistory([initialImage]);
   }, []);
 
@@ -145,7 +145,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
     setIsDrawing(false);
 
     const canvas = canvasRef.current;
-    const snapshot = ctxRef.current.getImageData(0, 0, canvas.width, canvas.height);
+    const snapshot = canvas.toDataURL("image/png");
 
     setHistory((prev) => {
       const updated = [...prev, snapshot];
@@ -158,7 +158,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-    const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const snapshot = canvas.toDataURL("image/png");
 
     setHistory((prev) => {
       const updated = [...prev, snapshot];
@@ -177,7 +177,20 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
       const current = updated.pop();
       setRedoHistory((r) => [...r, current]);
       const previous = updated[updated.length - 1];
-      ctxRef.current.putImageData(previous, 0, 0);
+      const img = new Image();
+
+      img.onload = () => {
+        ctxRef.current.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+
+        ctxRef.current.drawImage(img, 0, 0);
+      };
+
+      img.src = previous;
       return updated;
     });
   };
@@ -191,7 +204,20 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
         const newHistory = [...h, next];
         return newHistory.length > maxHistoryLength ? newHistory.slice(1) : newHistory;
       });
-      ctxRef.current.putImageData(next, 0, 0);
+      const img = new Image();
+
+      img.onload = () => {
+        ctxRef.current.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+
+        ctxRef.current.drawImage(img, 0, 0);
+      };
+
+      img.src = next;
       return updated;
     });
   };
