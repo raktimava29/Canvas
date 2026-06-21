@@ -225,7 +225,7 @@ const Whiteboard = forwardRef(({ isReadOnly = false }, ref) => {
   }, [defaultStroke, prevDefaultStroke]);
 
   return (
-    <div class="flex flex-col flex-1 md:m-5 lg:m-0">
+    <div className="flex flex-col flex-1 md:m-5 lg:m-0">
       <Flex justify="space-between" align="center" py={2} px={4} minH="56px">
   {!isReadOnly ? (
     <>

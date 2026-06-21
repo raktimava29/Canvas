@@ -32,6 +32,7 @@ const SearchUser = () => {
   const bg = useColorModeValue('gray.100', 'gray.900');
   const textColor = useColorModeValue('black', 'whiteAlpha.900');
   const borderColor = useColorModeValue('black', 'whiteAlpha.700');
+  const iconHoverBg = useColorModeValue('gray.300', 'whiteAlpha.200');
 
   useEffect(() => {
   const fetchUserName = async () => {
@@ -120,7 +121,7 @@ const SearchUser = () => {
         borderWidth="2px"
         borderColor={borderColor}
         _hover={{
-        bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
+        bg: iconHoverBg,
         transform: 'scale(1.05)',
         transition: 'all 0.2s',
       }}

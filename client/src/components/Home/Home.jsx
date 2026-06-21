@@ -250,15 +250,15 @@ const Home = () => {
         {error && <Center color="red.500">{error}</Center>}
       </Box>
 
-      <div class="flex flex-col md:flex-col lg:flex-row gap-2">
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
+      <div className="flex flex-col md:flex-col lg:flex-row gap-2">
+        <div className="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[40%]">
           <Notepad
             text={notepadText}
             setText={setNotepadText}
             isReadOnly={isReadOnly}
           />
         </div>
-        <div class="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
+        <div className="flex-shrink-0 flex-grow-0 md:basis-full lg:basis-[58%]">
           <Whiteboard ref={whiteboardRef} isReadOnly={isReadOnly} />
         </div>
       </div>

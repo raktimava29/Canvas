@@ -60,6 +60,8 @@ const SideDrawer = () => {
     const bgColor = useColorModeValue("gray.100", "gray.800");
     const hoverColor = useColorModeValue("gray.300", "gray.600");
     const borderColor = useColorModeValue("blue.400", "blue.200");
+    const iconHoverBg = useColorModeValue('blue.100', 'whiteAlpha.200');
+    const iconHoverBorder = useColorModeValue('blue.300', 'blue.200');
 
   return (
     <>
@@ -73,8 +75,8 @@ const SideDrawer = () => {
         borderWidth="2px"
         borderColor={borderColor}
         _hover={{
-        bg: useColorModeValue('blue.100', 'whiteAlpha.200'),
-        borderColor: useColorModeValue('blue.300', 'blue.200'),
+        bg: iconHoverBg,
+        borderColor: iconHoverBorder,
         transform: 'scale(1.05)',
         transition: 'all 0.2s ease',
       }}

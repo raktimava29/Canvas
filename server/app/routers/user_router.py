@@ -41,5 +41,5 @@ async def get_users(search: str = "", current_user=Depends(get_current_user)):
     return await search_users(search, current_user)
 
 @router.get("/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, current_user=Depends(get_current_user)):
     return await get_user_by_id(user_id)
