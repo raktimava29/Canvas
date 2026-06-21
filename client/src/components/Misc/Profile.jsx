@@ -25,7 +25,7 @@ const UserProfile = () => {
   try {
     user = JSON.parse(localStorage.getItem("userInfo"));
   } catch (err) {
-    console.warn("Invalid userInfo in localStorage");
+    console.warn("Invalid userInfo in localStorage", err);
   }
 
   const modalBg = useColorModeValue("white", "gray.800");
