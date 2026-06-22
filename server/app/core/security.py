@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from passlib.context import CryptContext
 
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 
@@ -20,7 +20,7 @@ def verify_password(plain_password:str, hashed_password:str) -> bool:
 def create_access_token(user_id:str):
     payload = {
         "id": user_id,
-        "exp": datetime.utcnow() + timedelta(hours=1)
+        "exp": datetime.utcnow(timezone.utc) + timedelta(hours=1)
     }
     
     return jwt.encode(

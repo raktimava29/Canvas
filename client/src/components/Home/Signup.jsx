@@ -43,6 +43,8 @@ const Signup = () => {
   const bgColor = useColorModeValue("white", "gray.800");
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
+  const iconHover = useColorModeValue("gray.200", "gray.700");
+  const textModeColor = useColorModeValue("blue.800", "whiteAlpha.900");
 
   const googleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -181,7 +183,7 @@ const Signup = () => {
             w="460px"
             maxW="90vw"
           >
-            <Center color={useColorModeValue("blue.800", "whiteAlpha.900")} fontSize="xl" fontWeight="semibold" py={6}>
+            <Center color={textModeColor} fontSize="xl" fontWeight="semibold" py={6}>
               Create a New Account
             </Center>
 
@@ -208,7 +210,7 @@ const Signup = () => {
               mb={4}
               cursor="pointer"
               onClick={googleSignup}
-              _hover={{ bg: useColorModeValue("gray.200", "gray.700"), transform: "scale(1.05)", transition: "all 0.2s ease" }}
+              _hover={{ bg: iconHover, transform: "scale(1.05)", transition: "all 0.2s ease" }}
             >
               <img src={google} alt="google" width="20px" style={{ marginRight: "10px" }} />
               <Text fontSize=" md" color={subTextColor}>
@@ -287,7 +289,7 @@ const Signup = () => {
 
       <Center bg={footerBg} py={2}>
         <Text fontSize="xs" color={footerColor}>
-          © 2025 Year. All rights reserved.
+          © 2026 Year. All rights reserved.
         </Text>
       </Center>
     </Box>

@@ -38,6 +38,8 @@ const Login = () => {
   const bgColor = useColorModeValue("white", "gray.800");
   const footerBg = useColorModeValue("gray.100", "gray.900");
   const footerColor = useColorModeValue("gray.500", "gray.400");
+  const iconHoverBg = useColorModeValue("gray.200", "gray.700");
+  const textModeColor = useColorModeValue("blue.800", "whiteAlpha.900");
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -174,7 +176,7 @@ const Login = () => {
           w="460px"
           maxW="90vw"
         >
-          <Center fontSize="xl" fontWeight="semibold" py={6} color={useColorModeValue("blue.800", "whiteAlpha.900")}>
+          <Center fontSize="xl" fontWeight="semibold" py={6} color={textModeColor}>
             Login to Your Account
           </Center>
 
@@ -188,7 +190,7 @@ const Login = () => {
             px={4}
             mb={4}
             cursor="pointer"
-            _hover={{ bg: useColorModeValue("gray.200", "gray.700"), transform: "scale(1.05)", transition: "all 0.2s ease" }}
+            _hover={{ bg: iconHoverBg, transform: "scale(1.05)", transition: "all 0.2s ease" }}
             onClick={googleLogin}
           >
             <img src={google} alt="google" width="20px" style={{ marginRight: "10px" }} />
@@ -269,7 +271,7 @@ const Login = () => {
 
       <Center bg={footerBg} py={2}>
         <Text fontSize="xs" color={footerColor}>
-          © 2025 Year. All rights reserved.
+          © 2026 Year. All rights reserved.
         </Text>
       </Center>
     </Box>

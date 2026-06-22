@@ -60,30 +60,3 @@ async def health():
     return {
         "status": "healthy"
     }
-
-        
-# from app.core.security import (
-#     hash_password,
-#     verify_password,
-#     create_access_token,
-#     verify_access_token
-# ) 
-
-# @app.get("/test-security")
-# async def test_security():
-#     hashed = hash_password("pass123")
-    
-#     valid = verify_password(
-#         "pass123",
-#         hashed
-#     )
-    
-#     token = create_access_token("123")
-#     decoded = verify_access_token(token)
-    
-#     return {
-#         "hashed": hashed,
-#         "valid": valid,
-#         "token": token,
-#         "decoded": decoded
-#     }
