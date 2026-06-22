@@ -15,7 +15,6 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import ColorModeButton from "../Misc/ColorToggle";
@@ -57,18 +56,13 @@ const Login = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async ({ access_token }) => {
       try {
-        const { data: googleData } = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-
         const { data: userData } = await api.post("/api/user/google-login", {
-          email: googleData.email,
-          googleId: googleData.sub,
+          access_token
         });
 
         localStorage.setItem(
           "userInfo",
-          JSON.stringify({ ...userData, pic: googleData.picture })
+          JSON.stringify(userData)
         );
 
         toast({
@@ -82,7 +76,7 @@ const Login = () => {
       } catch (error) {
         toast({
           title: "Google login failed.",
-          description: error?.response?.data?.message || "Something went wrong.",
+          description: error?.response?.data?.detail || "Something went wrong.",
           status: "error",
           duration: 3000,
           isClosable: true,

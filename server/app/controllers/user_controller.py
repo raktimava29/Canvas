@@ -1,10 +1,12 @@
 from fastapi import HTTPException
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bson import ObjectId
 
 from app.schemas.user import UserCreate, UserLogin
 from app.schemas.auth import AuthResponse, GoogleSignupRequest, GoogleLoginRequest
+
+from app.core.google_auth import verify_google_token
 
 from app.core.database import user_collection
 from app.core.security import (
@@ -31,8 +33,8 @@ async def register_user(payload: UserCreate):
         "email":payload.email,
         "password":hashed_password,
         "isOAuth": False,
-        "createdAt": datetime.utcnow(),
-        "updatedAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc),
+        "updatedAt": datetime.now(timezone.utc)
     }
     
     result = await user_collection.insert_one(user_data)
@@ -74,8 +76,10 @@ async def login_user(payload: UserLogin):
     )
     
 async def google_signup(payload: GoogleSignupRequest):
+    google_user = await verify_google_token(payload.access_token);
+    
     existing_user = await user_collection.find_one({
-        "email": payload.email
+        "email": google_user["email"]
     })
     
     if existing_user:
@@ -85,17 +89,15 @@ async def google_signup(payload: GoogleSignupRequest):
         )
         
     user_data = {
-        "name": payload.username,
-        "email": payload.email,
-        "googleId": payload.googleId,
+        "name": google_user.username,
+        "email": google_user.email,
+        "googleId": google_user.googleId,
         "isOAuth": True,
-        "createdAt": datetime.utcnow(),
-        "updatedAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc),
+        "updatedAt": datetime.now(timezone.utc)
     }
     
-    result = await user_collection.insert_one(
-        user_data
-    )
+    result = await user_collection.insert_one(user_data)
     
     token = create_access_token(str(result.inserted_id))
     
@@ -103,14 +105,16 @@ async def google_signup(payload: GoogleSignupRequest):
         id=str(result.inserted_id),
         name=payload.username,
         email=payload.email,
+        picture=google_user["picture"],
         token=token
     )
     
 async def google_login(payload: GoogleLoginRequest):
+    google_user = await verify_google_token(payload.access_token)
     
     user = await user_collection.find_one({
-        "email": payload.email,
-        "googleId": payload.googleId,
+        "email": google_user["email"],
+        "googleId": google_user["googleId"],
         "isOAuth": True
     })
     
@@ -126,6 +130,7 @@ async def google_login(payload: GoogleLoginRequest):
         id=str(user["_id"]),
         name=user["name"],
         email=user["email"],
+        picture=google_user["picture"],
         token=token
     )
     

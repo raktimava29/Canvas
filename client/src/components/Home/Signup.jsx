@@ -14,7 +14,6 @@ import {
 import logo from "../../assets/study-logo.png";
 import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SunIcon, MoonIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
@@ -47,23 +46,10 @@ const Signup = () => {
   const textModeColor = useColorModeValue("blue.800", "whiteAlpha.900");
 
   const googleSignup = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async ({access_token}) => {
       try {
-        const { data } = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          }
-        );
-
-        const { name, email, sub: googleId } = data;
-
         await api.post("/api/user/google-signup", {
-          username: name,
-          email,
-          googleId,
+          access_token
         });
 
         toast({
@@ -75,12 +61,10 @@ const Signup = () => {
 
         navigateTo("/");
       } catch (error) {
-        console.error("Google Signup Error:", error?.response?.data || error.message);
-
         toast({
           title: "Google sign up failed.",
           description:
-            error?.response?.data?.message || "Something went wrong.",
+            error?.response?.data?.detail || "Something went wrong.",
           status: "error",
           duration: 3000,
           isClosable: true,

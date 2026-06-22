@@ -4,7 +4,7 @@ from app.core.config import settings
 
 client = AsyncMongoClient(settings.MONGO_URI)
 
-db = client["test"]
+db = client[settings.DB_NAME]
 user_collection = db["users"]
 content_collection = db["contents"]
 
