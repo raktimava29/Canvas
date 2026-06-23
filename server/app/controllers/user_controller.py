@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from bson import ObjectId
 
 from app.schemas.user import UserCreate, UserLogin
-from app.schemas.auth import AuthResponse, GoogleSignupRequest, GoogleLoginRequest
+from app.schemas.auth import AuthResponse, AuthResult, GoogleSignupRequest, GoogleLoginRequest
 
 from app.core.google_auth import verify_google_token
 
@@ -41,10 +41,12 @@ async def register_user(payload: UserCreate):
     
     token = create_access_token(str(result.inserted_id))
     
-    return AuthResponse(
-        id=str(result.inserted_id),
-        name=payload.name,
-        email=payload.email,
+    return AuthResult(
+        user=AuthResponse(
+            id=str(result.inserted_id),
+            name=payload.name,
+            email=payload.email
+        ),
         token=token
     )
     
@@ -68,15 +70,17 @@ async def login_user(payload: UserLogin):
         
     token = create_access_token(str(user["_id"]))
     
-    return AuthResponse(
-        id=str(user["_id"]),
-        name=user["name"],
-        email=user["email"],
+    return AuthResult(
+        user=AuthResponse(
+            id=str(user["_id"]),
+            name=user["name"],
+            email=user["email"]
+        ),
         token=token
     )
     
 async def google_signup(payload: GoogleSignupRequest):
-    google_user = await verify_google_token(payload.access_token);
+    google_user = await verify_google_token(payload.access_token)
     
     existing_user = await user_collection.find_one({
         "email": google_user["email"]
@@ -89,9 +93,9 @@ async def google_signup(payload: GoogleSignupRequest):
         )
         
     user_data = {
-        "name": google_user.username,
-        "email": google_user.email,
-        "googleId": google_user.googleId,
+        "name": google_user["name"],
+        "email": google_user["email"],
+        "googleId": google_user["googleId"],
         "isOAuth": True,
         "createdAt": datetime.now(timezone.utc),
         "updatedAt": datetime.now(timezone.utc)
@@ -101,11 +105,13 @@ async def google_signup(payload: GoogleSignupRequest):
     
     token = create_access_token(str(result.inserted_id))
     
-    return AuthResponse(
-        id=str(result.inserted_id),
-        name=payload.username,
-        email=payload.email,
-        picture=google_user["picture"],
+    return AuthResult(
+        user=AuthResponse(
+            id=str(result.inserted_id),
+            name=google_user["name"],
+            email=google_user["email"],
+            picture=google_user["picture"]
+        ),
         token=token
     )
     
@@ -126,11 +132,13 @@ async def google_login(payload: GoogleLoginRequest):
         
     token = create_access_token(str(user["_id"]))
     
-    return AuthResponse(
-        id=str(user["_id"]),
-        name=user["name"],
-        email=user["email"],
-        picture=google_user["picture"],
+    return AuthResult(
+        user=AuthResponse(
+            id=str(user["_id"]),
+            name=user["name"],
+            email=user["email"],
+            picture=google_user["picture"]
+        ),
         token=token
     )
     
@@ -143,7 +151,7 @@ async def search_users(search: str, current_user):
             "$options": "i",
         }
         
-    users = await user_collection.find(query).to_list(None)
+    users = await user_collection.find(query).limit(10).to_list(10)
     
     users = [
         user 

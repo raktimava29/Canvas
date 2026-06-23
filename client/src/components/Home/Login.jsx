@@ -41,17 +41,30 @@ const Login = () => {
   const textModeColor = useColorModeValue("blue.800", "whiteAlpha.900");
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo) {
-      toast({
-        title: "You're already logged in.",
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-      });
-      navigateTo("/home");
-    }
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const { data } = await api.get("/api/user/me");
+
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify(data)
+        );
+
+        toast({
+          title: "You're already logged in.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        navigateTo("/home");
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkAuth();
+  }, [navigateTo, toast]);
 
   const googleLogin = useGoogleLogin({
     onSuccess: async ({ access_token }) => {
@@ -60,10 +73,7 @@ const Login = () => {
           access_token
         });
 
-        localStorage.setItem(
-          "userInfo",
-          JSON.stringify(userData)
-        );
+        localStorage.setItem("userInfo", JSON.stringify(userData));
 
         toast({
           title: "Logged in with Google!",
@@ -93,7 +103,7 @@ const Login = () => {
     },
   });
 
-  const handleSubmit = useCallback(
+  const handleLogin = useCallback(
     async (e) => {
       e.preventDefault();
 
@@ -240,7 +250,7 @@ const Login = () => {
             color="white"
             transition="all 0.2s ease"
             _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
-            onClick={handleSubmit}
+            onClick={handleLogin}
             isLoading={loading}
           >
             Welcome Back

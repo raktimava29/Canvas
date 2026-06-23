@@ -16,7 +16,7 @@ import google from "../../assets/Frame.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { SunIcon, MoonIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
+import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import ColorModeButton from "../Misc/ColorToggle";
 import api from "../../api/axios";
 
@@ -48,9 +48,11 @@ const Signup = () => {
   const googleSignup = useGoogleLogin({
     onSuccess: async ({access_token}) => {
       try {
-        await api.post("/api/user/google-signup", {
+        const { data } = await api.post("/api/user/google-signup", {
           access_token
         });
+
+        localStorage.setItem("userInfo", JSON.stringify(data));
 
         toast({
           title: "Signed up with Google!",
@@ -59,12 +61,11 @@ const Signup = () => {
           isClosable: true,
         });
 
-        navigateTo("/");
+        navigateTo("/home");
       } catch (error) {
         toast({
           title: "Google sign up failed.",
-          description:
-            error?.response?.data?.detail || "Something went wrong.",
+          description: error?.response?.data?.detail || "Something went wrong.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -81,7 +82,7 @@ const Signup = () => {
     },
   });
 
-  const handleSubmit = async () => {
+  const handleSignup = async () => {
     if (!username || !email || !password) {
       toast({
         title: "Missing fields",
@@ -96,11 +97,13 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await api.post("/api/user", {
+      const { data } = await api.post("/api/user", {
         name: username,
         email,
         password,
       });
+
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
       toast({
         title: "Account created successfully!",
@@ -109,13 +112,13 @@ const Signup = () => {
         isClosable: true,
       });
 
-      navigateTo("/");
-    } catch (err) {
-      console.error("Signup Error:", err?.response?.data || err.message);
+      navigateTo("/home");
+    } catch (error) {
+      console.error("Signup Error:", error?.response?.data || error.message);
 
       toast({
         title: "Signup failed",
-        description: err?.response?.data?.message || "Please try again.",
+        description: error?.response?.data?.detail || "Please try again.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -126,17 +129,30 @@ const Signup = () => {
   };
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo) {
-      toast({
-        title: "You're already logged in.",
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-      });
-      navigateTo("/");
-    }
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const { data } = await api.get("/api/user/me");
+
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify(data)
+        );
+
+        toast({
+          title: "You're already logged in.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        navigateTo("/home");
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkAuth();
+  }, [navigateTo, toast]);
 
   return (
     <Box bg={bgColor} color={textColor} minH="100vh" display="flex" flexDirection="column">
@@ -248,7 +264,7 @@ const Signup = () => {
               color="white"
               transition="all 0.2s ease"
               _hover={{ opacity: 0.9, transform: "scale(1.05)" }}
-              onClick={handleSubmit}
+              onClick={handleSignup}
               isLoading={loading}
             >
               Create an Account

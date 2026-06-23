@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.schemas.auth import AuthResponse, GoogleSignupRequest, GoogleLoginRequest
 
@@ -21,20 +21,77 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=AuthResponse, status_code=201)
-async def register(payload: UserCreate):
-    return await register_user(payload)
+async def register(payload: UserCreate, response: Response):
+    result =  await register_user(payload)
+
+    response.set_cookie(
+        key="access_token",
+        value=result.token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=86400
+    )
+    
+    return result.user
 
 @router.post("/login", response_model=AuthResponse, status_code=200)
-async def login(payload: UserLogin):
-    return await login_user(payload)
+async def login(payload: UserLogin, response: Response):
+    result = await login_user(payload)
+    
+    response.set_cookie(
+        key="access_token",
+        value=result.token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=86400
+    )
+    
+    return result.user
+
 
 @router.post("/google-signup", response_model=AuthResponse)
-async def signup_google(payload: GoogleSignupRequest):
-    return await google_signup(payload)
+async def signup_google(payload: GoogleSignupRequest, response: Response):
+    result = await google_signup(payload)
+
+    response.set_cookie(
+        key="access_token",
+        value=result.token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=86400
+    )
+    
+    return result.user
 
 @router.post("/google-login", response_model=AuthResponse)
-async def login_google(payload: GoogleLoginRequest):
-    return await google_login(payload)
+async def login_google(payload: GoogleLoginRequest, response: Response):
+    result = await google_login(payload)
+
+    response.set_cookie(
+        key="access_token",
+        value=result.token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=86400
+    )
+    
+    return result.user
+
+@router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie(key="access_token")
+    
+    return{
+        "message": "Logged Out"
+    }
+
+@router.get("/me")
+async def get_me(current_user=Depends(get_current_user)):
+    return current_user
 
 @router.get("/")
 async def get_users(search: str = "", current_user=Depends(get_current_user)):

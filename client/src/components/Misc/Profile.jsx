@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,14 +32,22 @@ const UserProfile = () => {
   const modalBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("black", "white");
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigateTo("/");
+  const handleLogout = async () => {
+     try{
+      await api.post("/api/user/logout");
+
+      localStorage.removeItem("userInfo");
+
+      navigateTo("/");
+    }
+    catch(err){
+      console.error(err);
+    }
   };
 
   const name = user?.name || "User";
   const email = user?.email || "No Email";
-  const avatarSrc = user?.pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
+  const avatarSrc = user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
 
   return (
     <>
