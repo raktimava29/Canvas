@@ -28,8 +28,8 @@ async def register(payload: UserCreate, response: Response):
         key="access_token",
         value=result.token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=86400
     )
     
@@ -43,8 +43,8 @@ async def login(payload: UserLogin, response: Response):
         key="access_token",
         value=result.token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=86400
     )
     
@@ -59,8 +59,8 @@ async def signup_google(payload: GoogleSignupRequest, response: Response):
         key="access_token",
         value=result.token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=86400
     )
     
@@ -74,8 +74,8 @@ async def login_google(payload: GoogleLoginRequest, response: Response):
         key="access_token",
         value=result.token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=86400
     )
     
