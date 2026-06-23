@@ -15,6 +15,8 @@ from app.controllers.user_controller import (
     get_user_by_id
 )
 
+from app.core.security import COOKIE_CONFIG
+
 router = APIRouter(
     prefix="/api/user",
     tags=["User"]
@@ -27,10 +29,7 @@ async def register(payload: UserCreate, response: Response):
     response.set_cookie(
         key="access_token",
         value=result.token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=86400
+        **COOKIE_CONFIG
     )
     
     return result.user
@@ -42,10 +41,7 @@ async def login(payload: UserLogin, response: Response):
     response.set_cookie(
         key="access_token",
         value=result.token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=86400
+        **COOKIE_CONFIG
     )
     
     return result.user
@@ -58,10 +54,7 @@ async def signup_google(payload: GoogleSignupRequest, response: Response):
     response.set_cookie(
         key="access_token",
         value=result.token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=86400
+        **COOKIE_CONFIG
     )
     
     return result.user
@@ -73,10 +66,7 @@ async def login_google(payload: GoogleLoginRequest, response: Response):
     response.set_cookie(
         key="access_token",
         value=result.token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=86400
+        **COOKIE_CONFIG
     )
     
     return result.user

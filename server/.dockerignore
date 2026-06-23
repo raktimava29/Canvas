@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+.env
+
+.git
+.gitignore
+
+venv
+mindtube
+
+.pytest_cache
+
+node_modules

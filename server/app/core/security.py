@@ -6,6 +6,17 @@ from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 
+COOKIE_CONFIG = {
+    "httponly": True,
+    "secure": settings.ENVIRONMENT == "production",
+    "samesite": (
+        "none"
+        if settings.ENVIRONMENT == "production"
+        else "lax"
+    ),
+    "max_age": 86400
+}
+
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"

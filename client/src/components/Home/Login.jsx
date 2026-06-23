@@ -148,7 +148,7 @@ const Login = () => {
         setLoading(false);
       }
     },
-    [email, password, loading, toast, navigateTo]
+    [email, password, toast, navigateTo]
   );
 
   return (

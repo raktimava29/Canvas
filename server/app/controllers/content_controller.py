@@ -17,7 +17,7 @@ async def save_content(payload: ContentSaveRequest, current_user):
     content = await content_collection.find_one_and_update(
         {
             "videoUrl": payload.videoUrl,
-            "user": current_user["_id"]
+            "user": ObjectId(current_user["_id"])
         },
         {
           "$set":{
@@ -38,7 +38,7 @@ async def get_content(videoUrl: str, current_user, userId: str | None = None):
     target_user = (
         ObjectId(userId)
         if userId
-        else current_user["_id"]
+        else ObjectId(current_user["_id"])
     )
     
     content = await content_collection.find_one({

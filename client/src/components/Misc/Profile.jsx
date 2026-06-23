@@ -31,6 +31,7 @@ const UserProfile = () => {
 
   const modalBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("black", "white");
+  const hoverBg = useColorModeValue('gray.300', 'whiteAlpha.200');
 
   const handleLogout = async () => {
      try{
@@ -60,7 +61,7 @@ const UserProfile = () => {
           borderWidth="2px"
           borderColor={borderColor}
           _hover={{
-          bg: useColorModeValue('gray.300', 'whiteAlpha.200'),
+          bg: hoverBg,
           transform: 'scale(1.05)',
           transition: 'all 0.2s',
         }}

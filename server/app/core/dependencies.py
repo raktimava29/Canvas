@@ -1,11 +1,8 @@
-from fastapi import Depends, HTTPException, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import HTTPException, Request
 from bson import ObjectId
 
 from app.core.security import verify_access_token
 from app.core.database import user_collection
-
-security = HTTPBearer()
 
 async def get_current_user(request: Request):
     token = request.cookies.get("access_token")
@@ -18,7 +15,7 @@ async def get_current_user(request: Request):
         
     payload = verify_access_token(token)
     
-    user_id = payload["id"]
+    user_id = (payload["id"])
     
     user = await user_collection.find_one({
         "_id": ObjectId(user_id)
@@ -30,6 +27,7 @@ async def get_current_user(request: Request):
             detail="Unauthorized"
         )
     
+    user["_id"] = str(user["_id"])
     user.pop("password", None)
       
     return user    
